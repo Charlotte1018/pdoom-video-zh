@@ -429,14 +429,14 @@ export default class LeftTurn extends Scene {
     stamp(1, T.tPDR);
   }
 
-  /** Terra incognita, lettered along the upper rim of the unplanned object (a map label). */
+  /** “未知领域”, lettered along the upper rim of the unplanned object (a map label). */
   drawTerrain(c: CanvasRenderingContext2D) {
     c.save();
-    const fam = F.serif(400, true), size = 84;
+    const fam = F.zh(), size = 84;
     c.font = font(fam, size);
     c.fillStyle = rgba('ash', 0.75);
     c.textAlign = 'center';
-    const lay = layout('Terra incognita', fam, size);
+    const lay = layout('未知领域', fam, size);
     const R = FACE.r * 0.8;
     const a0 = -Math.PI / 2 - (lay.width / R) / 2;
     // glyphs at their kerned positions along the arc (the T–e kern tucks the e under the T's arm)

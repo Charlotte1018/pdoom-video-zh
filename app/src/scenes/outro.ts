@@ -368,8 +368,8 @@ export default class Outro extends Scene {
     const guide = prog(k, 2.6, 3.2, ease.outExpo) * (1 - prog(k, 5.2, 5.8));
     if (guide > 0) {
       c.font = font(F.mono(400), 17); c.fillStyle = rgba('ash', 0.8 * guide);
-      c.fillText('baseline', W - 150 - 90, g.Y2 + 26);
-      c.fillText('x-height', W - 150 - 90, g.Y2 - g.S * 0.42 - 10);
+      c.fillText('基线', W - 150 - 90, g.Y2 + 26);
+      c.fillText('x 字高', W - 150 - 90, g.Y2 - g.S * 0.42 - 10);
       c.fillText(`${g.S.toFixed(0)} pt`, g.X, g.Y2 + 26);
     }
     // P(doom): fills in as its traced outline closes
@@ -400,7 +400,7 @@ export default class Outro extends Scene {
       const rule = prog(k, 8.35, 8.65, ease.outExpo);
       if (rule > 0) {
         c.fillStyle = rgba('bone', 0.25); c.fillRect(g.X, 880, 260 * rule, 1);
-        const note = '¹ estimate no longer defined', nn = Math.floor(prog(k, 8.45, 9.2) * note.length);
+        const note = '¹ 估算已无定义', nn = Math.floor(prog(k, 8.45, 9.2) * note.length);
         c.font = font(F.mono(400), 24); c.fillStyle = rgba('ash');
         c.fillText(note.slice(0, nn), g.X, 924);
       }

@@ -442,7 +442,7 @@ export default class Ascent extends Scene {
       const mc = S(MOON.x, MOON.y);
       c.save();
       c.fillStyle = rgba('ink', 0.92);
-      this.arcText(c, 'LUNAR RESERVE NOTE', mc.x, mc.y, (MOON.r * 1.8) * z, F.serif(600), 34 * z, 0.2);
+      this.arcText(c, '月球储备票据', mc.x, mc.y, (MOON.r * 1.8) * z, F.zh(), 34 * z, 0.2);
       c.font = font(F.serif(400, true), 20 * z);
       c.textAlign = 'center';
       const mp = S(MOON.x, MOON.y - MOON.r * 1.9);
@@ -518,13 +518,15 @@ export default class Ascent extends Scene {
     const nv = T.l2.words[0]!;
     const syl = this.nvSyl();
     const X0 = 150, Y0 = 600;
-    for (let i = 0; i < 4; i++) {
-      const ts = syl[i]!;
+    for (let i = 0; i < this.nvdaPaths.length; i++) {
+      const si = Math.round((i * (syl.length - 1)) / Math.max(1, this.nvdaPaths.length - 1));
+      const nextSi = Math.round(((i + 1) * (syl.length - 1)) / Math.max(1, this.nvdaPaths.length - 1));
+      const ts = syl[si]!;
       if (t < ts) continue;
       const P = this.nvdaPaths[i]!;
       const e = t - ts;
       const sc = 1 + 0.35 * Math.exp(-e / 0.05);
-      const hot = i === 3 ? t < nv.end + 0.12 : t < (syl[i + 1] ?? nv.end);
+      const hot = i === this.nvdaPaths.length - 1 ? t < nv.end + 0.12 : t < (syl[nextSi] ?? nv.end);
       c.save();
       c.translate(X0 + P.x + P.w / 2, Y0 - 80);
       c.scale(sc, sc);
@@ -830,7 +832,7 @@ export default class Ascent extends Scene {
     // footnote marker + footnote typed after the lock
     if (t > tL) {
       c.font = font(nf, 60); c.fillStyle = rgba('signal', 1); c.fillText('¹', x - 8, yN - 80);
-      const fn = '¹ One nonillion floating-point operations per second. Rounded down, for safety.';
+      const fn = '¹ 每秒一百穰次浮点运算。为安全起见，向下取整。';
       const n = Math.floor(fn.length * prog(t, tL + 0.3, tL + 1.05));
       c.font = font(F.mono(400), 20);
       c.fillStyle = rgba('ash', 0.95);
@@ -839,7 +841,7 @@ export default class Ascent extends Scene {
       c.fillStyle = rgba('graphite', 0.9);
       c.fillRect(150, 812, 220, 1);
       // P(doom) cameo: a second footnote, same rounding policy
-      const fn2 = `² P(doom): ${formatPDoom(this.pd.value(t))}. Also rounded down.`;
+      const fn2 = `² P(doom)：${formatPDoom(this.pd.value(t))}。同样向下取整。`;
       const n2 = Math.floor(fn2.length * prog(t, tL + 1.15, tL + 1.55));
       c.fillStyle = rgba('ash', 0.95);
       c.fillText(fn2.slice(0, n2), 150, 874);

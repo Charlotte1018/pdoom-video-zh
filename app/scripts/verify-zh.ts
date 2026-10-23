@@ -61,20 +61,35 @@ try {
     sc.fillRect(0, 0, sheet.width, sheet.height);
     const source = document.getElementById('c') as HTMLCanvasElement;
     const samples: { scene: string; t: number; milliseconds: number; energy: number }[] = [];
+    const sampleAt = async (scene: string, t: number) => {
+      const before = performance.now();
+      P.still(t, 1, 0.3);
+      const pixels = await P.engine.readPixelsAsync();
+      let energy = 0;
+      for (let i = 0; i < pixels.length; i += 4096) energy += pixels[i] + pixels[i + 1] + pixels[i + 2];
+      samples.push({ scene, t, milliseconds: performance.now() - before, energy });
+    };
 
+    const checkpoints: { scene: string; t: number; sheetIndex?: number }[] = [];
     for (let index = 0; index < P.timeline.length; index++) {
       const entry = P.timeline[index];
-      const times = [entry.start + 0.02, (entry.start + entry.end) / 2, entry.end - 0.02];
-      for (const t of times) {
-        const before = performance.now();
-        P.still(t, 1, 0.3);
-        const pixels = await P.engine.readPixelsAsync();
-        let energy = 0;
-        for (let i = 0; i < pixels.length; i += 4096) energy += pixels[i] + pixels[i + 1] + pixels[i + 2];
-        samples.push({ scene: entry.id, t, milliseconds: performance.now() - before, energy });
+      checkpoints.push({ scene: entry.id, t: entry.start + 0.02 });
+      checkpoints.push({ scene: entry.id, t: (entry.start + entry.end) / 2, sheetIndex: index });
+      checkpoints.push({ scene: entry.id, t: entry.end - 0.02 });
+    }
+    // Exercise every sung word window as well as scene boundaries. Many labels only
+    // appear for a fraction of a scene, so three scene samples alone cannot audit them.
+    for (const line of P.engine.lyrics.lines) {
+      for (let index = 0; index < line.words.length; index++) {
+        const word = line.words[index];
+        checkpoints.push({ scene: `歌词 ${line.i + 1}/${index + 1}`, t: (word.start + word.end) / 2 });
       }
-      P.still(times[1], 1, 0.3);
-      await P.engine.readPixelsAsync();
+    }
+    checkpoints.sort((a, b) => a.t - b.t);
+    for (const checkpoint of checkpoints) {
+      await sampleAt(checkpoint.scene, checkpoint.t);
+      if (checkpoint.sheetIndex === undefined) continue;
+      const index = checkpoint.sheetIndex;
       const x = (index % cols) * cw;
       const y = Math.floor(index / cols) * (ch + label);
       sc.drawImage(source, x, y, cw, ch);
@@ -82,7 +97,7 @@ try {
       sc.fillRect(x, y + ch, cw, label);
       sc.fillStyle = '#eee';
       sc.font = '16px "Noto Sans SC", sans-serif';
-      sc.fillText(`${index + 1}. ${times[1].toFixed(2)} 秒`, x + 8, y + ch + 17);
+      sc.fillText(`${index + 1}. ${checkpoint.t.toFixed(2)} 秒`, x + 8, y + ch + 17);
     }
 
     const audit = ((globalThis as any).__zhTextAudit ?? []) as { source: string; output: string }[];
@@ -107,6 +122,11 @@ try {
     /^(?:\d+\s+)?P\((?:DOOM|doom)\)(?:\s+[\d.]+)?$/u,
     /^PC · IR · ACC · MAR · MDR$/u,
     /^NV 10³⁰ \d+ A$/u,
+    /^字宽 [\d.]+  ·  d\(智能爆炸\)\/dt > 0$/u,
+    /TikZ/u,
+    /Substack/u,
+    /^Archi(?:vo)?/u,
+    /P\(d(?:o(?:o(?:m\)?)?)?)?/iu,
   ];
   const untranslated = report.audit
     .filter(({ source, output }) => source === output && /[A-Za-z]{2}/u.test(output))

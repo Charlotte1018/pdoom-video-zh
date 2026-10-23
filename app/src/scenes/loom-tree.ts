@@ -14,12 +14,12 @@ export type P2 = { x: number; y: number };
 
 /** The continuations that were not sampled, per node (node i replaces word i). Offsets = lanes (world px). */
 const ALTS: { label: string; p: number; off: number }[][] = [
-  [{ label: 'Exactly', p: 0.19, off: -640 }, { label: 'Almost', p: 0.08, off: -712 }, { label: 'Not', p: 0.04, off: 600 }, { label: 'Only', p: 0.03, off: 672 }],
-  [{ label: 'like', p: 0.14, off: -548 }, { label: 'so', p: 0.05, off: 520 }],
-  [{ label: 'predicted', p: 0.21, off: -412 }, { label: 'prophesied', p: 0.09, off: -474 }, { label: 'warned', p: 0.06, off: 376 }, { label: 'priced in', p: 0.04, off: 438 }],
-  [{ label: 'in', p: 0.18, off: -372 }, { label: 'on', p: 0.04, off: 290 }],
-  [{ label: 'Moloch', p: 0.22, off: -196 }, { label: 'the scaling laws', p: 0.17, off: -250 }, { label: 'Nostradamus', p: 0.09, off: -304 },
-    { label: 'nobody, technically', p: 0.08, off: 88 }, { label: 'a Substack post', p: 0.05, off: 142 }, { label: 'the eval suite', p: 0.03, off: 196 }],
+  [{ label: '恰好', p: 0.19, off: -640 }, { label: '几乎', p: 0.08, off: -712 }, { label: '并非', p: 0.04, off: 600 }, { label: '仅仅', p: 0.03, off: 672 }],
+  [{ label: '如同', p: 0.14, off: -548 }, { label: '如此', p: 0.05, off: 520 }],
+  [{ label: '预测', p: 0.21, off: -412 }, { label: '预言', p: 0.09, off: -474 }, { label: '警告', p: 0.06, off: 376 }, { label: '已计入价格', p: 0.04, off: 438 }],
+  [{ label: '在其中', p: 0.18, off: -372 }, { label: '在其上', p: 0.04, off: 290 }],
+  [{ label: '莫洛克', p: 0.22, off: -196 }, { label: '规模定律', p: 0.17, off: -250 }, { label: '诺查丹玛斯', p: 0.09, off: -304 },
+    { label: '严格来说无人', p: 0.08, off: 88 }, { label: '一篇 Substack 帖子', p: 0.05, off: 142 }, { label: '评测套件', p: 0.03, off: 196 }],
 ];
 /** Horizontal reach of each node's arcs (world px). */
 const REACH = [640, 540, 440, 330, 250];
@@ -30,7 +30,7 @@ const CHOSEN_P = [0.41, 0.62, 0.38, 0.71, 0.31];
 /** Room for a final candidate's probability and bar, beside its label (world px). */
 const PROB_W = 150;
 /** Second-level continuations of each alternative (tiny, dim). */
-const POOL = ['the', 'as', 'a', 'we', 'in', 'by', 'it', 'so', 'all', 'no', 'then', 'that', 'not', 'of', 'one', 'our', 'you', 'this', 'more', 'was', 'is', 'to', '…'];
+const POOL = ['这', '如', '一', '我们', '在', '由', '它', '所以', '全部', '不', '然后', '那个', '并非', '的', '一个', '我们的', '你', '这个', '更多', '曾经', '是', '到', '…'];
 
 interface Branch {
   from: P2; to: P2;            // connector (vertical-then-horizontal cubic)

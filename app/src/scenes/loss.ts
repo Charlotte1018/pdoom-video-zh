@@ -791,7 +791,7 @@ export default class LossScene extends Scene {
         c.font = font(F.mono(400), fsz(r, 0.18));
         c.letterSpacing = '1px'; c.textAlign = 'left';
         c.fillStyle = rgba('ash', 0.9 * labA);
-        const s = 'train/loss   run: you-and-me-v2   smoothing: 0';
+        const s = '训练/损失   运行：你和我-v2   平滑：0';
         c.fillText(s.slice(0, Math.floor(s.length * prog(t, this.T0 + 0.1, this.T0 + 0.7))), r.x, r.y);
       }
       c.letterSpacing = '0px';

@@ -26,7 +26,7 @@ cd app
 bun scripts/render.ts video --samples auto --shutter 0.2 --out ../out/pdoom-zh-1080p60.mp4
 ```
 
-完整验证会运行单元测试、类型检查、生产构建，并在无头 Chrome 中检查 22 个场景的 66 个代表帧：
+完整验证会运行单元测试、类型检查、生产构建，并在无头 Chrome 中检查 22 个场景边界及每个歌词词窗的代表帧：
 
 ```sh
 cd app

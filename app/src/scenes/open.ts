@@ -403,19 +403,19 @@ export default class OpenScene extends Scene {
     S(line(pt(gb.x0 - 0.5, gb.y1), pt(gx1, gb.y1)), tI + 0.05, tI + 0.33, 'cons', { ez: ez.outCubic, alpha: 0.5, dash: 8, group: 'type' });
     S(line(pt(gb.x0 - 0.5, gb.y0 + 0.53 * this.row1.em), pt(gx1, gb.y0 + 0.53 * this.row1.em)), tI + 0.08, tI + 0.36, 'cons', { ez: ez.outCubic, alpha: 0.35, dash: 4, group: 'type' });
     S(line(pt(gb.x0 - 0.5, gb.y0 - DESC_EM * this.row1.em), pt(gx1, gb.y0 - DESC_EM * this.row1.em)), tI + 0.1, tI + 0.38, 'cons', { ez: ez.outCubic, alpha: 0.35, dash: 4, group: 'type' });
-    this.note('baseline', gx1 + 0.08, gb.y0 - 0.03, tI + 0.3, { em: 0.1, col: 'ash', group: 'typel' });
-    this.note(`cap height ${(gb.y1 - gb.y0).toFixed(2)}`, gx1 + 0.08, gb.y1 - 0.03, tI + 0.33, { em: 0.1, col: 'ash', group: 'typel' });
-    this.note('x-height', gx1 + 0.08, gb.y0 + 0.53 * this.row1.em - 0.03, tI + 0.36, { em: 0.1, col: 'ash', group: 'typel' });
-    this.note('descender', gx1 + 0.08, gb.y0 - DESC_EM * this.row1.em - 0.03, tI + 0.38, { em: 0.1, col: 'ash', group: 'typel' });
+    this.note('基线', gx1 + 0.08, gb.y0 - 0.03, tI + 0.3, { em: 0.1, col: 'ash', group: 'typel' });
+    this.note(`大写字高 ${(gb.y1 - gb.y0).toFixed(2)}`, gx1 + 0.08, gb.y1 - 0.03, tI + 0.33, { em: 0.1, col: 'ash', group: 'typel' });
+    this.note('x 字高', gx1 + 0.08, gb.y0 + 0.53 * this.row1.em - 0.03, tI + 0.36, { em: 0.1, col: 'ash', group: 'typel' });
+    this.note('下伸部', gx1 + 0.08, gb.y0 - DESC_EM * this.row1.em - 0.03, tI + 0.38, { em: 0.1, col: 'ash', group: 'typel' });
     // glyph metrics: the em box, side bearings, the advance
     const gI = iW.lay.glyphs[0]!, kI = iW.em / 100;
     const ex0 = iW.x + gI.x * kI, ex1 = iW.x + (gI.x + gI.w) * kI, ey0 = iW.y - 0.21 * iW.em, ey1 = iW.y + 0.79 * iW.em;
     S(poly(pt(ex0, ey1), pt(ex1, ey1), pt(ex1, ey0), pt(ex0, ey0)), tI + 0.3, tI + 0.5, 'cons', { alpha: 0.55, dash: 5, group: 'type' });
-    this.dimension(pt(ex0, ey0 - 0.14), pt(ex1, ey0 - 0.14), `adv ${(ex1 - ex0).toFixed(2)}`, tI + 0.45, 'typel', 0.075);
+    this.dimension(pt(ex0, ey0 - 0.14), pt(ex1, ey0 - 0.14), `字宽 ${(ex1 - ex0).toFixed(2)}`, tI + 0.45, 'typel', 0.075);
     this.note('LSB', (ex0 + gb.x0) / 2, ey1 + 0.04, tI + 0.5, { em: 0.065, col: 'ash', align: 'center', group: 'typel' });
     this.note('RSB', (ex1 + gb.x1) / 2, ey1 + 0.04, tI + 0.52, { em: 0.065, col: 'ash', align: 'center', group: 'typel' });
-    this.note('U+0049  LATIN CAPITAL LETTER I', ex0, ey1 + 0.62, tI + 0.36, { em: 0.09, col: 'bone', a: 0.75, group: 'typel', dur: 0.25 });
-    this.note('Archivo 700 · wdth 100', ex0, ey1 + 0.47, tI + 0.42, { em: 0.075, col: 'ash', group: 'typel', dur: 0.2 });
+    this.note('U+0049  拉丁大写字母 I', ex0, ey1 + 0.62, tI + 0.36, { em: 0.09, col: 'bone', a: 0.75, group: 'typel', dur: 0.25 });
+    this.note('Archivo 700 · 字宽 100', ex0, ey1 + 0.47, tI + 0.42, { em: 0.075, col: 'ash', group: 'typel', dur: 0.2 });
     this.note(`\\fill (${gb.x0.toFixed(2)},${gb.y0.toFixed(2)}) rectangle ++(${(gb.x1 - gb.x0).toFixed(2)},${(gb.y1 - gb.y0).toFixed(2)}); % I`, gb.x0 - 0.02, gb.y0 - 0.3, tI + 0.22, { em: 0.13, col: 'ash', group: 'lyricI', dur: 0.3 });
 
     // ---- the unicorn, primitive by primitive (checkpoint 1)
@@ -452,7 +452,7 @@ export default class OpenScene extends Scene {
     S(horn.slice(0, ia + 1), sa[0] - 0.01, sa[0] + 0.06, 'prim', { pen: true, ez: ez.outQuad, group: 'u1', width: 1.9 });
     S(horn.slice(ia), sa[0] + 0.06, sa[0] + 0.2, 'prim', { pen: true, ez: ez.inOutQuad, group: 'u1', width: 1.9 });
     S(line(pt(2.77, 2.25), pt(3.72, 4.45)), sa[0] - 0.03, sa[0] + 0.1, 'cons', { alpha: 0.45, dash: 6, group: 'cons' });
-    this.note('% horn', 2.2, 3.12, sa[0] + 0.08, { em: 0.12, col: 'signal', a: 1, group: 'code', align: 'right' });
+    this.note('% 独角', 2.2, 3.12, sa[0] + 0.08, { em: 0.12, col: 'signal', a: 1, group: 'code', align: 'right' });
     const hb0 = horn[0]!, hap = horn[ia]!, hb1 = horn[hornBaseR(horn)]!;
     for (let k = 1; k <= 7; k++) {
       const f = k / 8, g = Math.min(1, f + 0.08);
@@ -466,17 +466,17 @@ export default class OpenScene extends Scene {
 
     // ---- the TikZ listing (top-left of the sheet): each line lights up as its primitive is plotted
     const lst: [string, number][] = [
-      ['% prompt: "Draw a unicorn in TikZ."', B(0) + 0.12],
+      ['% 提示词：“用 TikZ 画一只独角兽。”', B(0) + 0.12],
       ['\\begin{tikzpicture}', B(0) + 0.5],
-      ['\\draw (0,0) ellipse (2 and 1);     % body', tB],
+      ['\\draw (0,0) ellipse (2 and 1);     % 身体', tB],
       ['\\foreach \\x in {-1.5,-1,0.85,1.35}', tL],
       ['  \\draw (\\x,-0.62) rectangle ++(0.32,-1.68);', tL + 0.1],
-      ['\\draw (-1.95,0.3) .. controls ..;  % tail', tT],
-      ['\\draw (1.25,0.55) -- ... -- cycle; % neck', tN],
+      ['\\draw (-1.95,0.3) .. controls ..;  % 尾巴', tT],
+      ['\\draw (1.25,0.55) -- ... -- cycle; % 脖颈', tN],
       ['\\draw[rotate=-17] (2.72,1.95) ellipse ..;', tN + 0.09],
-      ['\\draw (2.3,2.3) .. controls ..;     % mane', tM],
-      ['\\draw (2.62,2.3) -- (3.3,3.55) -- ..;  % horn', this.agi[0]![0]],
-      ['\\fill (2.95,2) circle (0.08);      % eye', w.eyes!.start],
+      ['\\draw (2.3,2.3) .. controls ..;     % 鬃毛', tM],
+      ['\\draw (2.62,2.3) -- (3.3,3.55) -- ..;  % 独角', this.agi[0]![0]],
+      ['\\fill (2.95,2) circle (0.08);      % 眼睛', w.eyes!.start],
       ['\\end{tikzpicture}', w.eyes!.start + 0.3],
     ];
     lst.forEach(([txt, ti], i) => this.note(txt, 0.32, 6.12 - i * 0.232, ti, { em: 0.13, col: i === 0 ? 'bone' : 'ash', a: i === 0 ? 0.85 : 0.75, dur: 0.12, group: 'listing', hot: i > 1 ? 0.45 : 0, maxPx: 34 }));
@@ -487,11 +487,11 @@ export default class OpenScene extends Scene {
     for (let r = 1; r < 3; r++) S(line(pt(tbx, tby - r * rh), pt(tbx + tbw, tby - r * rh)), tt + 0.1, tt + 0.25, 'cons', { alpha: 0.5, group: 'title' });
     S(line(pt(tbx + 2.3, tby - rh), pt(tbx + 2.3, tby - 3 * rh)), tt + 0.15, tt + 0.28, 'cons', { alpha: 0.5, group: 'title' });
     const cell = (txt: string, x: number, r: number, d: number, col = 'ash') => this.note(txt, tbx + x, tby - r * rh - 0.23, tt + d, { em: 0.13, col, group: 'title', dur: 0.15 });
-    cell('TITLE   unicorn (exp. 1)', 0.1, 0, 0.2, 'bone');
-    cell('DRAWN   the model', 0.1, 1, 0.25);
-    cell('CHECKED —', 2.4, 1, 0.3);
-    cell('SCALE   1:1', 0.1, 2, 0.35);
-    cell('SHEET   1 of 1', 2.4, 2, 0.4);
+    cell('标题   独角兽（实验 1）', 0.1, 0, 0.2, 'bone');
+    cell('绘制   模型', 0.1, 1, 0.25);
+    cell('复核 —', 2.4, 1, 0.3);
+    cell('比例   1:1', 0.1, 2, 0.35);
+    cell('图纸   第 1 张 / 共 1 张', 2.4, 2, 0.4);
 
     // ---- the eye: the pen hovers through "in your", dots it on "eyes"
     const E = this.eye;
@@ -511,7 +511,7 @@ export default class OpenScene extends Scene {
     const ah = 0.035, an = la;
     S([pt(p0.x + ah * Math.cos(an + 0.35), p0.y + ah * Math.sin(an + 0.35)), p0, pt(p0.x + ah * Math.cos(an - 0.35), p0.y + ah * Math.sin(an - 0.35))], te + 0.16, te + 0.19, 'dim', { width: 1.1, group: 'eyec' });
     this.plotText('r = 0.08', p1.x + 0.06, p1.y + 0.05, 0.155, te + 0.3, te + 0.54, 'eyec');
-    this.note('\\fill (2.95,2) circle (0.08); % eye', p1.x + 0.06, p1.y - 0.1, te + 0.44, { em: 0.045, col: 'ash', group: 'eyec', maxPx: 99 });
+    this.note('\\fill (2.95,2) circle (0.08); % 眼睛', p1.x + 0.06, p1.y - 0.1, te + 0.44, { em: 0.045, col: 'ash', group: 'eyec', maxPx: 99 });
 
     // ---- circuits: the pen rides the router, then ticks the checkpoints
     const route = octilinear(part('body'), 0.24, 0.08, true);
@@ -528,7 +528,7 @@ export default class OpenScene extends Scene {
       pgLine.push(pt(pg.x + (i / 240) * 3.6, pg.y + amp * (0.65 * noise1(i * 0.9, 3) + 0.35 * noise1(i * 3.1, 4))));
     }
     this.polygraph = this.addStroke(pgLine, this.tNerv - 0.04, this.tNervEnd, 'plot', { pen: true, width: 1.3, group: 'poly' });
-    this.note('% tremor', pg.x, pg.y + 0.38, this.tNerv, { em: 0.13, col: 'ash', group: 'poly' });
+    this.note('% 颤动', pg.x, pg.y + 0.38, this.tNerv, { em: 0.13, col: 'ash', group: 'poly' });
     // "that's no surprise": to the surprisal line, then the pen follows the typing
     this.wp(pt(this.eq.x - 0.05, this.eq.y + 0.1), w.surprise!.start + 0.02, 0.01);
     S([pt(this.eq.x - 0.05, this.eq.y - 0.1), pt(this.eq.x + 5.3, this.eq.y - 0.1)], w.surprise!.start + 0.03, w.surprise!.start + 0.3, 'ghost', { pen: true, alpha: 0 });
@@ -1041,7 +1041,7 @@ export default class OpenScene extends Scene {
     if (ga <= 0.003) return;
     const p = this.tablePos();
     const rows = [
-      ['ckpt', 'step', 'legs', 'P(doom)'],
+      ['检查点', '步数', '腿数', 'P(doom)'],
       ['1', '0', '4', '0.02'],
       ['2', '4,000', '5', '0.02'],
       ['3', '32,000', '4', '0.02'],

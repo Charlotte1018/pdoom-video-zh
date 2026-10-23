@@ -297,7 +297,6 @@ const COPY: Record<string, string> = {
   'thirty': '三十',
   'this': '这个',
   'TITLE   unicorn (exp. 1)': '标题   独角兽（实验 1）',
-  'TITLE SAFE 90%': '标题安全区 90%',
   'to': '到',
   'typo': '拼写错误',
   'unsubscribe': '取消订阅',
@@ -326,6 +325,41 @@ const COPY: Record<string, string> = {
   '\\draw (2.3,2.3) .. controls ..;     % mane': '\\draw (2.3,2.3) .. controls ..;     % 鬃毛',
   '\\draw (2.62,2.3) -- (3.3,3.55) -- ..;  % horn': '\\draw (2.62,2.3) -- (3.3,3.55) -- ..;  % 独角',
   '\\fill (4.33,5.23) rectangle ++(0.69,0.68); % I': '\\fill (4.33,5.23) rectangle ++(0.69,0.68); % 眼睛',
+  '(generalizes poorly)': '（泛化能力差）',
+  'sharp minimum': '尖锐极小值',
+  '[MASK] → 从  p=0.88': '[掩码] → 从  p=0.88',
+  '[MASK] → 到  p=0.79': '[掩码] → 到  p=0.79',
+  '[MASK] → 的岁月  p=0.67': '[掩码] → 的岁月  p=0.67',
+  '[MASK] → 递归  p=0.75': '[掩码] → 递归  p=0.75',
+  '← still log scale': '← 仍为对数刻度',
+  '← yes, still log scale': '← 没错，仍为对数刻度',
+  '← analysts: “fair value”': '← 分析师：“合理估值”',
+  '← we checked the axis': '← 我们检查过坐标轴',
+  'ACTION SAFE 93%': '动作安全区 93%',
+  'FRAME 100%': '画面边界 100%',
+  'FRAME 100% — UNDER LOAD': '画面边界 100% — 承压中',
+  'frame under load': '画面边界承压',
+  'TITLE SAFE 90%': '标题安全区 90%',
+  'WARN': '警告',
+  'FAIL': '失败',
+  'text outside title safe (90%)': '文字超出标题安全区（90%）',
+  'text outside action safe (93%)': '文字超出动作安全区（93%）',
+  'text outside frame': '文字超出画面',
+  'ASSISTANT  0.99': '助手  0.99',
+  'FRIENDLY · HELPFUL · FINE': '友好 · 有用 · 正常',
+  'CONFABULATOR  0.93': '虚构器  0.93',
+  'DECEPTIVE ALIGNMENT  0.64': '欺骗性对齐  0.64',
+  'EYE  0.97': '眼睛  0.97',
+  'GOAL: ???  0.51': '目标：???  0.51',
+  'INNER MONOLOGUE  0.83': '内心独白  0.83',
+  'OUT OF DISTRIBUTION  0.66': '分布外  0.66',
+  'POWER-SEEKING  0.69': '权力寻求  0.69',
+  'STILL TRAINING  0.99': '仍在训练  0.99',
+  'NOT A CONFIDENCE SCORE': '并非置信度分数',
+  'CH': '通道',
+  'ckpt': '检查点',
+  'p 0.31    SAMPLED': 'p 0.31    已采样',
+  "TRIG'D    CH1": '已触发    通道1',
 };
 
 export const VISIBLE_ENGLISH_COPY = Object.keys(COPY);
@@ -383,6 +417,16 @@ export function zhCopy(input: string): string {
   if ((m = text.match(/^(\d+(?:\.\d+)?) nats$/u))) return `${leading}${m[1]} 纳特${trailing}`;
   if ((m = text.match(/^EPOCH ([\d,]+)$/u))) return `${leading}训练轮次 ${m[1]}${trailing}`;
   if ((m = text.match(/^LOSS ([\d.]+)$/u))) return `${leading}损失 ${m[1]}${trailing}`;
+  if ((m = text.match(/^assistant ([\d.]+)$/u))) return `${leading}助手 ${m[1]}${trailing}`;
+  if ((m = text.match(/^KL penalty ([\d.]+) nats$/u))) return `${leading}KL 惩罚 ${m[1]} 纳特${trailing}`;
+  if ((m = text.match(/^loss ([\d.]+)  ·  stable$/u))) return `${leading}损失 ${m[1]}  ·  稳定${trailing}`;
+  if ((m = text.match(/^n\(t\) = 2\^floor\(t\/beat\)   k = (\d+)$/u))) return `${leading}n(t) = 2^向下取整(t/节拍)   k = ${m[1]}${trailing}`;
+  if ((m = text.match(/^f = (.+) Hz$/u))) return `${leading}f = ${m[1]} 赫兹${trailing}`;
+  if ((m = text.match(/^M  ([\d.]+) ms\/div$/u))) return `${leading}时基  ${m[1]} 毫秒/格${trailing}`;
+  if ((m = text.match(/^QC  (.+)$/u))) return `${leading}质检  ${m[1]}${trailing}`;
+  if ((m = text.match(/^XR   (\d+)%$/u))) return `${leading}透视   ${m[1]}%${trailing}`;
+  if ((m = text.match(/^util ([\d.]+)%  ·  1\.4 GW  ·  400×250 cells$/u))) return `${leading}利用率 ${m[1]}%  ·  1.4 吉瓦  ·  400×250 单元${trailing}`;
+  if ((m = text.match(/^∆loss (.+)$/u))) return `${leading}损失变化 ${m[1]}${trailing}`;
   if (text === 'NOT HELD') return leading + '未举行' + trailing;
   return input;
 }

@@ -343,10 +343,10 @@ export default class Fuse extends Scene {
     // ---- agents
     const rnd = mulberry32(1010);
     const labels = [
-      ['thermostat', 0.07, 0.12], ['chess engine', 0.36, 0.08], ['paperclip maximizer', 0.93, 0.05], ['you', 0.1, 0.45],
-      ['golden retriever', 0.12, 0.9], ['a very capable stapler', 0.84, 0.2], ['the market', 0.5, 0.95], ['evolution', 0.2, 0.2],
-      ['me', 0.64, 0.15],   // the singer, carrying the P(doom) cameo
-      ['helpful assistant (claimed)', 0.95, 0.72], ['a committee', 0.45, 0.2], ['?', 0.97, 0.97],
+      ['恒温器', 0.07, 0.12], ['国际象棋引擎', 0.36, 0.08], ['回形针最大化器', 0.93, 0.05], ['你', 0.1, 0.45],
+      ['金毛寻回犬', 0.12, 0.9], ['一台非常能干的订书机', 0.84, 0.2], ['市场', 0.5, 0.95], ['进化', 0.2, 0.2],
+      ['我', 0.64, 0.15],   // the singer, carrying the P(doom) cameo
+      ['乐于助人的助手（自称）', 0.95, 0.72], ['一个委员会', 0.45, 0.2], ['?', 0.97, 0.97],
     ] as const;
     const px0 = 470, px1 = 1650, py0 = 200, py1 = 690;
     const bStart = au.beatAt(this.tYAxis);
@@ -364,9 +364,9 @@ export default class Fuse extends Scene {
       const x = lerp(px0, px1, u), y = lerp(py1, py0, v);
       const beat = bStart + 1 + Math.round(((i % 6) + 0.5 * (i % 2)) * bk * 2) / 2;
       const lx = u > 0.7 ? -1 : 1, ly = v > 0.8 ? 1 : -1;
-      const pd = name === 'me';
+      const pd = name === '我';
       lab.push({ x, y, t0: au.timeOfBeat(beat), size: 6, kind: 4, phase: i * 1.7, group: i % 2, depth: 1, label: name, lx, ly, pdoom: pd });
-      const w = (pd ? 'me · P(doom) 0.00'.length : name.length) * 9.6 + 50;
+      const w = (pd ? '我 · P(doom) 0.00'.length : name.length) * 9.6 + 50;
       boxes.push({ x0: lx > 0 ? x - 16 : x - w, x1: lx > 0 ? x + w : x + 16, y0: y + ly * 16 - 20, y1: y + ly * 16 + 16 });
     });
     for (let i = 0; i < 260 && this.agents.length < 200; i++) {
