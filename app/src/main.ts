@@ -2,6 +2,9 @@
 import { Engine, type AdaptiveSampling } from './engine/engine';
 import { PW, PH, SCALE } from './engine/gl';
 import { makeTimeline } from './timeline';
+import { installChineseCanvasText, sceneTitle } from './localization/copy';
+
+installChineseCanvasText();
 
 const params = new URLSearchParams(location.search);
 const EXPORT = params.has('export');
@@ -90,6 +93,7 @@ function sender(url: string, inflight: number): Promise<Sender> {
 function setupExport() {
   document.body.classList.add('export');
   window.__pdoom = {
+    project: 'pdoom-video-zh',
     engine,
     duration: engine.duration,
     errors: engine.errors,
@@ -164,8 +168,8 @@ function setupPlayer() {
     m.className = 'mark';
     m.style.left = `${(e.start / engine.duration) * 100}%`;
     m.style.width = `${((e.end - e.start) / engine.duration) * 100}%`;
-    m.title = `${e.id} ${e.start.toFixed(2)}–${e.end.toFixed(2)}`;
-    m.textContent = e.id;
+    m.title = `${sceneTitle(e.id)} ${e.start.toFixed(2)}–${e.end.toFixed(2)}`;
+    m.textContent = sceneTitle(e.id);
     m.onclick = () => seek(e.start);
     marks.appendChild(m);
   }
@@ -212,7 +216,7 @@ function setupPlayer() {
     if (now - fpsT > 500) { fps = (frames * 1000) / (now - fpsT); frames = 0; fpsT = now; }
     const e = TIMELINE.find((x) => t >= x.start && t < x.end);
     const l = engine.lyrics.lineAt(t);
-    info.textContent = `${t.toFixed(2)}s  beat ${engine.audio.beatAt(t).toFixed(2)}  bar ${engine.audio.barAt(t).toFixed(2)}  [${e?.id ?? '—'}]  ${fps.toFixed(0)}fps   ${l ? '“' + l.text + '”' : ''}${loop ? '  LOOP' : ''}`;
+    info.textContent = `${t.toFixed(2)} 秒  节拍 ${engine.audio.beatAt(t).toFixed(2)}  小节 ${engine.audio.barAt(t).toFixed(2)}  [${e ? sceneTitle(e.id) : '—'}]  ${fps.toFixed(0)} 帧/秒   ${l ? '“' + l.text + '”' : ''}${loop ? '  循环' : ''}`;
     requestAnimationFrame(tick);
   };
   requestAnimationFrame(tick);

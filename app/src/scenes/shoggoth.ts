@@ -451,8 +451,8 @@ export default class Shoggoth extends Scene {
   // ------------------------------------------------------------------ the creature's engraved words
   /** SHOGGOTH'S: a plane in the world, facing +z (baseline-left origin O, right U, down V). */
   private shogGeom() {
-    const fam = F.archivo(100, 900);
-    const text = 'SHOGGOTH’S';
+    const fam = F.zh();
+    const text = '修格斯';
     const lay = layout(text, fam, 100, 2);
     const m = SHOG.cap / (this.capK * 100);
     const U = v3(1, 0, 0), V = v3(0, -1, 0);
@@ -464,10 +464,10 @@ export default class Shoggoth extends Scene {
     const au = this.ctx.audio;
     const w = this.L1.words[this.L1.words.length - 1]!;
     const step = clamp(Math.floor(au.beatAt(t) - au.beatAt(w.start) + 0.02), 0, LIES_W.length - 1);
-    const fam = F.archivo(LIES_W[step]!, 900);
-    const lay = layout('LIES,', fam, 100, 2);
+    const fam = F.zh();
+    const lay = layout('谎言', fam, 100, 2);
     const m = LIES.cap / (this.capK * 100);
-    return { fam, text: 'LIES,', lay, m, U: v3(1, 0, 0), V: v3(0, -1, 0), O: LIES.O.clone(), cap: LIES.cap, word: w, step };
+    return { fam, text: '谎言', lay, m, U: v3(1, 0, 0), V: v3(0, -1, 0), O: LIES.O.clone(), cap: LIES.cap, word: w, step };
   }
 
   private updateBand(t: number) {

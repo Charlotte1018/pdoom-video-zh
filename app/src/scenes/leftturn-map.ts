@@ -126,7 +126,7 @@ export function drawMap(): HTMLCanvasElement {
   c.restore();
   // time ruler on the left of the route
   c.fillStyle = rgba('ash', 0.6);
-  const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+  const months = ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'];
   for (let y = Y0, i = 0; y > 1000; y -= 50, i++) {
     const big = i % 6 === 0;
     c.fillRect(PX - 300, y, big ? 40 : 18, 2);
@@ -144,7 +144,7 @@ export function drawMap(): HTMLCanvasElement {
   c.beginPath(); c.arc(0, 0, 70, 0, Math.PI * 2); c.stroke();
   c.beginPath(); c.moveTo(0, -95); c.lineTo(14, 0); c.lineTo(0, 95); c.lineTo(-14, 0); c.closePath(); c.stroke();
   c.fillStyle = rgba('bone', 0.9); c.beginPath(); c.moveTo(0, -95); c.lineTo(14, 0); c.lineTo(-14, 0); c.closePath(); c.fill();
-  c.font = font(F.serif(600), 44); c.textAlign = 'center'; c.fillText('N', 0, -110);
+  c.font = font(F.zh(), 44); c.textAlign = 'center'; c.fillText('北', 0, -110);
   c.restore();
   // title block
   c.save(); c.translate(3330, 3620);
@@ -178,7 +178,7 @@ export function makeMarksTexture(): THREE.DataTexture {
   const cv = canvas(N);
   const c = cv.getContext('2d')!;
   c.scale(S, S);
-  const fam = F.archivo(62, 900);
+  const fam = F.zh();
   const stretch = 2.3;
   const paint = (txt: string, x: number, y: number, rot: number, col: string, size = 118, st = stretch) => {
     c.save();
@@ -190,8 +190,8 @@ export function makeMarksTexture(): THREE.DataTexture {
     c.restore();
   };
   c.globalCompositeOperation = 'lighter';
-  paint('SHARP', MAP.PX, MAP.SHARP_Y, 0, 'rgb(255,0,0)');
-  paint('LEFT', MAP.PX, MAP.LEFT_Y, 0, 'rgb(0,255,0)');
+  paint('突然', MAP.PX, MAP.SHARP_Y, 0, 'rgb(255,0,0)');
+  paint('急转', MAP.PX, MAP.LEFT_Y, 0, 'rgb(0,255,0)');
   // turn arrow: stem north, bending west, head pointing west
   c.save();
   c.strokeStyle = 'rgb(0,255,0)'; c.fillStyle = 'rgb(0,255,0)';
@@ -200,9 +200,9 @@ export function makeMarksTexture(): THREE.DataTexture {
   c.beginPath(); c.moveTo(ax, ay + 80); c.lineTo(ax, ay - 20); c.arc(ax - 70, ay - 20, 70, 0, -Math.PI / 2, true); c.lineTo(ax - 120, ay - 90); c.stroke();
   c.beginPath(); c.moveTo(ax - 190, ay - 90); c.lineTo(ax - 120, ay - 140); c.lineTo(ax - 120, ay - 40); c.closePath(); c.fill();
   c.restore();
-  paint('TURN', MAP.TURN_X, MAP.TURN_Y, -Math.PI / 2, 'rgb(0,0,255)');
-  paint('AND', MAP.AND_X, MAP.TURN_Y, -Math.PI / 2, 'rgb(0,0,255)', 100, 1.75);
-  paint('THERE', MAP.THERE_X, MAP.TURN_Y, -Math.PI / 2, 'rgb(0,255,0)', 100, 1.75);
+  paint('弯', MAP.TURN_X, MAP.TURN_Y, -Math.PI / 2, 'rgb(0,0,255)');
+  paint('你已', MAP.AND_X, MAP.TURN_Y, -Math.PI / 2, 'rgb(0,0,255)', 100, 1.75);
+  paint('脱离轨道', MAP.THERE_X, MAP.TURN_Y, -Math.PI / 2, 'rgb(0,255,0)', 100, 1.75);
   const rgb = c.getImageData(0, 0, N, N).data;
   // check marks
   const cvA = canvas(N);

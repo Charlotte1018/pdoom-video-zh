@@ -3,6 +3,7 @@ import data from '../../data/lyrics.json';
 import { Lyrics } from '../src/engine/lyrics';
 import { F, smart } from '../src/engine/type';
 import { chineseLine, sourceText, sourceWord } from '../src/localization/chinese';
+import { VISIBLE_ENGLISH_COPY, zhCopy } from '../src/localization/copy';
 
 const lyrics = new Lyrics(data as any);
 
@@ -54,4 +55,29 @@ test('bundles and registers the Simplified Chinese display face', async () => {
   const fontFile = Bun.file(new URL('../public/fonts/NotoSansCJKsc-Medium.otf', import.meta.url));
   expect(await fontFile.exists()).toBe(true);
   expect(fontFile.size).toBeGreaterThan(1_000_000);
+});
+
+test('maps the known on-screen English interface copy to Chinese', () => {
+  const required = [
+    'FORM 7-B',
+    'SAFETY EVALUATION OF A FRONTIER SYSTEM',
+    'PROMPT',
+    'REPLY',
+    'AUTOMATIC REPLY',
+    'DO NOT REPLY',
+    'REVIEW SCHEDULE — AGI, v1.0',
+    'YOU ARE HERE',
+    'LOSS (LOG)',
+    'STEP →',
+    'Regenerate',
+    'this response could not be verified',
+  ];
+  for (const text of required) {
+    expect(VISIBLE_ENGLISH_COPY).toContain(text);
+    expect(zhCopy(text)).not.toBe(text);
+    expect(/[\u3400-\u9fff]/u.test(zhCopy(text))).toBe(true);
+  }
+  expect(zhCopy('WK 31')).toBe('第 31 周');
+  expect(zhCopy('STATUS: NOT HELD')).toBe('状态：未举行');
+  expect(zhCopy('Current P(doom): 0.81 (this message was sent automatically)')).toBe('当前 P(doom)：0.81（此消息由系统自动发送）');
 });

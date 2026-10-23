@@ -499,12 +499,12 @@ export default class Room extends Scene {
     const widths = [62, 75, 87.5, 100, 112.5, 125];
     const bF = au.beatAt(this.tF);
     const step = clamp(Math.floor((au.beatAt(t) - bF) * 4 + 0.001), 0, widths.length - 1);
-    const fam = F.archivo(widths[step]!, 900);
+    const fam = F.zh();
     const u = prog(t, this.tF, this.tB);
     const targetW = lerp(900, 2300, Math.pow(u, 1.7));
-    const lay = layout('FOOM', fam, 100);
+    const lay = layout('智能爆炸', fam, 100);
     const size = (100 * targetW) / lay.width;
-    const L2 = layout('FOOM', fam, size);
+    const L2 = layout('智能爆炸', fam, size);
     const x0 = W / 2 - L2.width / 2;
     const base = H / 2 + size * 0.36;
     // O centres (Archivo's cap height ≈ 0.72 em)
@@ -613,7 +613,7 @@ export default class Room extends Scene {
     c.letterSpacing = '2px';
     c.fillStyle = rgba('bone', 0.75);
     c.textAlign = 'center';
-    c.fillText(`WDTH ${[62, 75, 87.5, 100, 112.5, 125][Lf.step]}  ·  d(FOOM)/dt > 0`, W / 2, Math.min(H - 170, Lf.base + 60));
+    c.fillText(`字宽 ${[62, 75, 87.5, 100, 112.5, 125][Lf.step]}  ·  d(智能爆炸)/dt > 0`, W / 2, Math.min(H - 170, Lf.base + 60));
     c.restore();
   }
 

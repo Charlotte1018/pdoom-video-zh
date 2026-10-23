@@ -758,8 +758,9 @@ export default class Bureau extends Scene {
       c.save();
       c.translate(x0 + 200, A.y + 345);
       c.rotate(-0.06);
-      c.strokeStyle = TYPE(0.95); c.lineWidth = 3.4; c.lineCap = 'round'; c.lineJoin = 'round';
-      drawStrokeText(c, this.sig, this.sig.total * clamp(k / 0.85));
+      c.fillStyle = TYPE(0.95);
+      c.font = font(F.zh(), 88);
+      c.fillText(Array.from('已核准').slice(0, Math.ceil(3 * clamp(k / 0.85))).join(''), 0, 0);
       if (k > 0.85) {
         const u = (k - 0.85) / 0.15;
         c.beginPath(); c.moveTo(-10, 14); c.quadraticCurveTo(120, 30, lerp(-10, 260, u), lerp(14, 4, u)); c.stroke();
@@ -972,23 +973,22 @@ export default class Bureau extends Scene {
 
   drawAnnexLyric(c: Ctx2, t: number, loop: number) {
     const Ls = this.layers;
-    const fam = F.archivo(100, 900), size = 132;
+    const fam = F.zh(), size = 132;
     const yTop = -292;
     c.save();
     c.textBaseline = 'alphabetic';
     c.font = font(fam, size);
-    // "Forward" over the input layer, printed L->R within the word
-    const fw = layout('Forward', fam, size);
+    // “前向传播” over the input layer, printed left-to-right within the word
+    const fw = layout(this.wFwd.w, fam, size);
     const fx0 = Ls[0]!.x - fw.width / 2;
     const per = Math.min(0.06, (this.wFwd.end - this.wFwd.start) / fw.glyphs.length);
     for (const g of fw.glyphs) if (t >= this.wFwd.start + g.i * per) { c.fillStyle = PRINT(1); c.fillText(g.ch, fx0 + g.x, yTop); }
-    // M, L, P over h1, h2, y-hat, each on its syllable
-    ['M', 'L', 'P'].forEach((ch, k) => {
+    // “多 / 层 / 感知机” over h1, h2, y-hat, each on its source syllable
+    ['多', '层', '感知机'].forEach((ch, k) => {
       const ts = this.syl[k]![0];
       if (t < ts) return;
       const w = measure(ch, fam, size);
-      // the lyric's comma after P, kerned in under the P's bowl; the syllable bar stops where it starts
-      const wb = k === 2 ? glyphX(ch + ',', 1, fam, size) : w;
+      const wb = k === 2 ? glyphX(ch + '，', Array.from(ch).length, fam, size) : w;
       const pop = pulse(t, ts, 0.06);
       const x = Ls[k + 1]!.x;
       c.save();
@@ -996,7 +996,7 @@ export default class Bureau extends Scene {
       c.scale(1 + 0.1 * pop, 1 + 0.1 * pop);
       c.fillStyle = PRINT(1);
       c.fillText(ch, -w / 2, 0);
-      if (k === 2) c.fillText(',', -w / 2 + wb, 0);
+      if (k === 2) c.fillText('，', -w / 2 + wb, 0);
       c.restore();
       const u = prog(t, ts, ts + 0.14, ease.outCubic) * (1 - prog(t, this.syl[k]![1] + 0.1, this.syl[k]![1] + 0.2));
       if (u > 0) { c.fillStyle = ORANGE(1); c.fillRect(x - w / 2, yTop + 18, wb * u, 9); }
@@ -1097,13 +1097,15 @@ export default class Bureau extends Scene {
     };
     strike(-660, -230, 680, 370, this.tObs, 1);
     strike(-620, 380, 660, -250, this.tStrike2, 5);
-    // hand-written "obsolete" in orange marker next to the heading, with an underline
+    // orange handwritten-style Chinese note next to the heading
     if (t >= this.tObs) {
       c.save();
       c.translate(x + 6, hy + 12);
       c.rotate(-0.07);
-      c.strokeStyle = ORANGE(1); c.lineWidth = 7; c.lineCap = 'round'; c.lineJoin = 'round';
-      drawStrokeText(c, this.obsHand, writtenLen(this.obsHand, this.obsCharTimes, t));
+      c.fillStyle = ORANGE(1);
+      c.font = font(F.zh(), 104);
+      const p = prog(t, this.tObs, Math.min(this.wObs.end, this.tBurst - 0.12));
+      c.fillText(Array.from('已废弃').slice(0, Math.ceil(3 * p)).join(''), 0, 0);
       c.restore();
     }
     c.restore();

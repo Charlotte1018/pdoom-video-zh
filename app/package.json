@@ -1,8 +1,16 @@
 {
-  "name": "app",
+  "name": "pdoom-video-zh",
   "module": "index.ts",
   "type": "module",
   "private": true,
+  "scripts": {
+    "dev": "vite --port 5198 --strictPort",
+    "test": "bun test",
+    "check": "tsc --noEmit && tsc --noEmit -p tsconfig.scripts.json",
+    "build": "vite build",
+    "verify": "bun scripts/verify-zh.ts",
+    "render": "bun scripts/render.ts video --samples 4 --shutter 0.2 --out ../out/pdoom-zh-1080p60.mp4"
+  },
   "devDependencies": {
     "@types/bun": "latest",
     "@types/opentype.js": "^1.3.10",

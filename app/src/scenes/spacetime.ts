@@ -115,9 +115,9 @@ export default class SpacetimeScene extends Scene {
 
   // ---- content
   s1!: Stroke2;
-  big = F.archivo(100, 900);
+  big = F.zh();
   nowLay!: TextLayout; nowX0 = 0; nowBase = 0; nowSize = 380; butSize = 118;
-  ringGlyphs: SrcGlyph[] = []; ringFam = F.archivo(87.5, 900);
+  ringGlyphs: SrcGlyph[] = []; ringFam = F.zh();
   begunLay!: TextLayout; begunGlyphT: [number, number][] = [];
   flowT: Float32Array = new Float32Array(0);
   flowDt = 1 / 240;
@@ -179,16 +179,16 @@ export default class SpacetimeScene extends Scene {
     {
       const mc = document.createElement('canvas').getContext('2d')!;
       mc.font = font(this.big, this.nowSize);
-      this.nowLay = layout('NOW', this.big, this.nowSize);
+      this.nowLay = layout('如今', this.big, this.nowSize);
       const o = this.nowLay.glyphs[1]!;
-      const m = mc.measureText('O');
+      const m = mc.measureText('今');
       const oCy = (m.actualBoundingBoxAscent - m.actualBoundingBoxDescent) / 2; // O centre above the baseline
       const C = this.lensCentre0();
       this.nowX0 = C.x - (o.x + o.w / 2);
       this.nowBase = C.y + oCy;
     }
     {
-      const ws = this.wSing, txt = ws.w.toUpperCase();
+      const ws = this.wSing, txt = '奇点';
       const lay = layout(txt, this.ringFam, 100, 2);
       const n = lay.glyphs.length;
       // letters are set as sung; the word is long and held, so spread the letters over its first 80%
@@ -492,7 +492,7 @@ export default class SpacetimeScene extends Scene {
       c.scale(slB, slB);
       c.font = font(this.big, this.butSize);
       c.fillStyle = heatCol(t - this.tBut, 0.96 * aB);
-      c.fillText('BUT', 0, 0);
+      c.fillText('可', 0, 0);
       c.restore();
       if (t >= this.wNow.start) {
         const aN = prog(t, this.wNow.start, this.wNow.start + 0.03) * (1 - gone);
@@ -501,7 +501,7 @@ export default class SpacetimeScene extends Scene {
         c.translate(C.x, C.y); c.scale(slN, slN); c.translate(-C.x, -C.y);
         c.font = font(this.big, this.nowSize);
         c.fillStyle = heatCol(t - this.wNow.start, 0.97 * aN);
-        c.fillText('NOW', this.nowX0, this.nowBase);
+        c.fillText('如今', this.nowX0, this.nowBase);
         c.restore();
       }
       if (t >= this.wThe.start) {
@@ -509,7 +509,7 @@ export default class SpacetimeScene extends Scene {
         c.font = font(this.big, this.butSize);
         c.textAlign = 'right';
         c.fillStyle = heatCol(t - this.wThe.start, 0.96 * aT);
-        c.fillText('THE', this.nowX0 + this.nowLay.width, this.nowBase + this.butSize + 34);
+        c.fillText('这个', this.nowX0 + this.nowLay.width, this.nowBase + this.butSize + 34);
         c.textAlign = 'left';
       }
       c.restore();

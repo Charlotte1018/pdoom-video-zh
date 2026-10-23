@@ -149,7 +149,7 @@ export default class Outro extends Scene {
         const typed = Math.floor(prog(s, 1, 2.2) * 60);
         c.font = font(F.mono(400), 22); c.fillStyle = rgba('ash', 0.95);
         // Ω as U+2126 (the ohm sign): Plex Mono has it, not the Greek Ω (which would fall back to a system font)
-        c.fillText('¹ Kolmogorov (1933): P(\u2126) = 1.  Deprecated.'.slice(0, typed), RX, 990);
+        c.fillText('¹ 柯尔莫哥洛夫（1933）：P(\u2126) = 1。已废弃。'.slice(0, typed), RX, 990);
       }
     } else if (bar === 1) {
       // a log ruler flies past under a marker; the number, huge, top left
