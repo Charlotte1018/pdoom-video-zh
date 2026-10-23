@@ -1,5 +1,6 @@
 // Word-timed lyrics (data/lyrics.json) with queries for karaoke rendering.
 import { smart } from './type';
+import { chineseLine, sourceText, sourceToken } from '../localization/chinese';
 
 export interface Word {
   w: string; // display token (punctuation attached, typographic quotes: don’t, ’cause)
@@ -26,14 +27,16 @@ export class Lyrics {
   constructor(j: { lines: Omit<Line, 'words'> & { words: Omit<Word, 'line' | 'index' | 'gi'>[] }[] | any[] }) {
     // display text gets curly apostrophes and quotes (the data keeps the typed ones); mono UI
     // text that wants them straight uses plain()
-    this.lines = (j.lines as any[]).map((l, li) => ({
+    const sourceLines = (j.lines as any[]).map((l, li) => ({
       ...l,
       i: li,
       text: smart(l.text),
       words: (l.words as any[]).map((w, wi) => ({ ...w, w: smart(w.w), line: li, index: wi, gi: 0 })),
     }));
+    const sourceWords = sourceLines.flatMap((l) => l.words);
+    sourceWords.forEach((w, i) => (w.gi = i));
+    this.lines = sourceLines.map(chineseLine);
     this.words = this.lines.flatMap((l) => l.words);
-    this.words.forEach((w, i) => (w.gi = i));
   }
 
   static async load(): Promise<Lyrics> {
@@ -63,7 +66,7 @@ export class Lyrics {
   /** Lines whose text includes `s` (case-insensitive, straight or curly quotes). Handy for finding a lyric by content. */
   find(s: string): Line[] {
     const q = fold(s);
-    return this.lines.filter((l) => fold(l.text).includes(q));
+    return this.lines.filter((l) => fold(sourceText(l)).includes(q) || fold(l.text).includes(q));
   }
   /** First line containing `s`; throws if missing (fail loudly while authoring). */
   get(s: string, nth = 0): Line {
@@ -82,7 +85,7 @@ export class Lyrics {
   /** Words whose normalized text matches (e.g. 'p(doom)'). */
   findWords(s: string): Word[] {
     const q = norm(s);
-    return this.words.filter((w) => norm(w.w) === q);
+    return this.words.filter((w) => norm(sourceToken(w)) === q || norm(w.w) === q);
   }
 
   /**

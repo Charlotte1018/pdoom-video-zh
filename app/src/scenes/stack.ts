@@ -10,6 +10,7 @@ import { LineBatch } from '../engine/lines';
 import { LIN, rgba } from '../engine/palette';
 import { F, font, layout } from '../engine/type';
 import { Lyrics, type Word } from '../engine/lyrics';
+import { sourceToken } from '../localization/chinese';
 import { clamp, ease, hash, lerp, prog, pulse, smoothstep, springStep, TAU, frameIdx } from '../engine/util';
 import { sparkHead, sparkParticles } from './_motifs';
 import { TextPlane, beatsIn, lin, strokeLines, type RGB } from './stack-kit';
@@ -130,7 +131,7 @@ export default class Stack extends Scene {
       this.groups.push(this.makeGroup(block, ws, stepTimeOf(block)));
     }
     // held word: the blocks between a long word and the next group echo it (ghost copies)
-    const tw = q.words.find((w) => /transformers/i.test(w.w));
+    const tw = q.words.find((w) => /transformers/i.test(sourceToken(w)));
     if (tw) {
       const g = this.groups.find((g) => g.words.includes(tw))!;
       const next = this.groups.find((x) => x.block > g.block);
@@ -146,7 +147,7 @@ export default class Stack extends Scene {
     // tracked about as tight as before, the inks of E–Y kept a hairline apart
     {
       const fam = F.archivo(75, 900);
-      const text = this.disobey.w.replace(/[^A-Za-z]/g, '').toUpperCase();
+      const text = this.disobey.w.replace(/[^\p{L}\p{N}]/gu, '').toUpperCase();
       const capH = 2.3, minGap = capH * 0.04;
       const lay = layout(text, fam, 100, -0.03 * 100);
       let shift = 0, right = -Infinity;
@@ -186,7 +187,7 @@ export default class Stack extends Scene {
     }
     for (const o of this.text3.children) ((o as THREE.Mesh).material as THREE.Material).depthTest = true;
     // phase cuts (camera setups change on these step times)
-    const gFirst = (re: RegExp) => this.groups.find((g) => g.words.some((w) => re.test(w.w)));
+    const gFirst = (re: RegExp) => this.groups.find((g) => g.words.some((w) => re.test(sourceToken(w))));
     const gAll = gFirst(/^all$/i), gTill = gFirst(/^till$/i);
     this.phaseCuts = [
       { t: t0, id: 'A' },

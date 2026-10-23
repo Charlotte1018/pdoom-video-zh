@@ -45,7 +45,7 @@ export default class Dense extends Scene {
     this.pd = new PDoom(lyrics);
     this.press = new Press(audio, this.L1, this.L2, this.ctx.start, this.c2, this.c3);
     this.askew = new Askew(audio, this.L4, this.c4, this.ctx.end);
-    this.gpu = new GpuFloor(this.L3.words.map((x) => x.w.replace(/[^A-Za-z]/g, '').toUpperCase()));
+    this.gpu = new GpuFloor(this.L3.words.map((x) => x.w.replace(/[^\p{L}\p{N}]/gu, '').toUpperCase()));
   }
 
   override render(f: Frame, out: THREE.WebGLRenderTarget) {

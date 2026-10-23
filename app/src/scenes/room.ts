@@ -23,6 +23,7 @@ import { LineBatch } from '../engine/lines';
 import { LIN, rgba } from '../engine/palette';
 import { F, font, layout, ot } from '../engine/type';
 import { Lyrics, type Line, type Word } from '../engine/lyrics';
+import { sourceToken } from '../localization/chinese';
 import { clamp, lerp, ease, prog, mulberry32, springStep, pulse, TAU, smoothstep, hash, noise1 } from '../engine/util';
 import { sparkParticles } from './_motifs';
 import { PDoom, formatPDoom } from '../engine/hud';
@@ -194,7 +195,7 @@ export default class Room extends Scene {
     const w3 = this.L3.words;
     // the board flips over on the snare that lands with "with"
     this.tFlip = w3[0]!.start - 0.09;
-    const bagW = w3.find((w) => /bag/i.test(w.w)) ?? w3[2]!;
+    const bagW = w3.find((w) => /bag/i.test(sourceToken(w))) ?? w3[2]!;
     this.tBag = bagW.start;
     this.tLand = au.timeOfBeat(Math.ceil(au.beatAt(this.tBag + 0.15)));
     this.tShrooms = w3[w3.length - 1]!.start;

@@ -109,7 +109,7 @@ export class Press {
     // movement 2: each stressed word lands on a beat and breaks one more fence
     const beatOf = (s: number) => this.beats.find((b) => b >= s - 0.07) ?? s;
     const [wBr, wTh, wEa, wSa, wFe] = L2.words as [Word, Word, Word, Word, Word];
-    const up = (w: Word) => w.w.replace(/[^A-Za-z-]/g, '').toUpperCase();
+    const up = (w: Word) => w.w.replace(/[^\p{L}\p{N}-]/gu, '').toUpperCase();
     this.rup = [c2, beatOf(wTh.start), beatOf(wSa.start), beatOf(wFe.start)];
     const AW = ACTION.x1 - ACTION.x0, TW = TITLE.x1 - TITLE.x0;
     // [words, Archivo width, width it bursts out to, width it is held at before, burst beat, left-anchored]
@@ -374,7 +374,7 @@ export class Press {
       // per-word karaoke: outline before, signal wipe while sung, bone after
       let ci = 0;
       r.words.forEach((w, wi) => {
-        const wt = w.w.replace(/[^A-Za-z-]/g, '').toUpperCase();
+        const wt = w.w.replace(/[^\p{L}\p{N}-]/gu, '').toUpperCase();
         const a = xAt(l, ci), bx = xAt(l, ci + wt.length);
         const n = sungChars(w, wt, t);
         const s = xAt(l, ci + n);

@@ -22,6 +22,7 @@ for (const wt of [400, 600]) {
 for (const [n, f] of [['300', 'Light'], ['400', 'Regular'], ['500', 'Medium'], ['600', 'SemiBold'], ['700', 'Bold']] as const)
   DEFS.push({ family: `Plex-${n}`, file: `src/IBMPlexMono-${f}.ttf` });
 DEFS.push({ family: 'PlexItalic-400', file: 'src/IBMPlexMono-Italic.ttf' });
+DEFS.push({ family: 'NotoSansSC', file: 'NotoSansCJKsc-Medium.otf' });
 
 /** Convenience family names. */
 export const F = {
@@ -41,6 +42,10 @@ export const F = {
     if (italic) return 'PlexItalic-400';
     return `Plex-${nearest([300, 400, 500, 600, 700], weight)}`;
   },
+  /** Bundled Simplified Chinese face used for lyrics, labels and text outlines. */
+  zh(): string {
+    return 'NotoSansSC';
+  },
 };
 
 function nearest(list: number[], v: number) {
@@ -50,7 +55,7 @@ function nearest(list: number[], v: number) {
 }
 
 /** CSS font string for Canvas2D. */
-export const font = (family: string, sizePx: number) => `${sizePx}px "${family}"`;
+export const font = (family: string, sizePx: number) => `${sizePx}px "${family}", "NotoSansSC"`;
 
 const otCache = new Map<string, opentype.Font>();
 const bufCache = new Map<string, ArrayBuffer>();

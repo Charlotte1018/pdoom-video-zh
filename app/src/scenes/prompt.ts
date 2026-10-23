@@ -11,6 +11,7 @@ import { LineBatch } from '../engine/lines';
 import { rgba } from '../engine/palette';
 import { F, font, measure, plain } from '../engine/type';
 import { Lyrics, norm, type Line, type Word } from '../engine/lyrics';
+import { sourceToken } from '../localization/chinese';
 import { clamp, ease, hash, lerp, noise1, prog, smoothstep, TAU, frameIdx } from '../engine/util';
 import { sparkHead, sparkParticles, MASK } from './_motifs';
 import { SPECS, REPLY, META, type Variant, type Cand } from './prompt-data';
@@ -73,7 +74,7 @@ export default class Prompt extends Scene {
     words.forEach((w, wi) => {
       if (wi > 0) ci += 1; // the space
       const ww = typed[wi]!;
-      let pieces = specs[norm(w.w)];
+      let pieces = specs[norm(sourceToken(w))];
       if (!pieces || pieces.map((p) => p.s).join('') !== ww) pieces = [{ s: ww, dist: [[ww, 0.5], ['…', 0.12]] }];
       const syl = w.syl && w.syl.length === pieces.length ? w.syl : null;
       let off = 0;
@@ -258,7 +259,7 @@ export default class Prompt extends Scene {
       const lt = t - this.ctx.start, dur = this.tEnd - this.ctx.start;
       const rushK = clamp((t - this.tEnter) / (this.tEnd - this.tEnter));
       u.camZ!.value = lt * 0.42 + 2.2 * Math.pow(lt / dur, 2.4) + 16 * Math.pow(rushK, 2.2);
-      const eat = this.line.words.find((w) => norm(w.w) === 'eat');
+      const eat = this.line.words.find((w) => norm(sourceToken(w)) === 'eat');
       u.swallow!.value = eat ? clamp((t - eat.start) / 0.9, 0, 2) : 2;
       u.glow!.value = 0.25 + 0.5 * Math.pow(lt / dur, 2) + 6 * Math.pow(rushK, 3) + 0.25 * beatPulse;
       u.rush!.value = rushK;

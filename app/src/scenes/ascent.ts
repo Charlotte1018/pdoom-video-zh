@@ -11,6 +11,7 @@ import { LineBatch } from '../engine/lines';
 import { LIN, rgba } from '../engine/palette';
 import { F, font, glyphX, layout, textPath2D } from '../engine/type';
 import { Lyrics, norm, type Line, type Word } from '../engine/lyrics';
+import { sourceToken } from '../localization/chinese';
 import { clamp, ease, hash, keys, lerp, mulberry32, prog, pulse, TAU, frameIdx } from '../engine/util';
 import { makeEyePass, EYE } from './ascent-eye';
 import { makeNotePass, makeCompPass, makeCandles, DEC, MOON, NOTE, type Candle } from './ascent-note';
@@ -22,7 +23,7 @@ type Mv = 'A' | 'B' | 'C' | 'D';
 
 function wordOf(l: Line, s: string): Word {
   const q = norm(s);
-  return l.words.find((w) => norm(w.w).includes(q)) ?? l.words[0]!;
+  return l.words.find((w) => norm(sourceToken(w)).includes(q)) ?? l.words[0]!;
 }
 
 export default class Ascent extends Scene {
@@ -60,9 +61,9 @@ export default class Ascent extends Scene {
     T.one = T.l4.words[0]!.start;
     T.second = wordOf(T.l4, 'second').start;
     T.cutB = this.snap(T.nvda);
-    // NVDA lettering outlines (banknote-style hatched letters)
-    const fam = F.archivo(125, 900), size = 196, track = 10;
-    const lay = layout('NVDA', fam, size, track);
+    // Localized company-name lettering outlines (banknote-style hatched letters).
+    const fam = F.zh(), size = 196, track = 10;
+    const lay = layout(T.l2.words[0]!.w, fam, size, track);
     this.nvdaPaths = lay.glyphs.map((g) => ({ p: textPath2D(g.ch, fam, size, 0, 0), x: g.x, w: g.w }));
     const rnd = mulberry32(606);
     for (let i = 0; i < 900; i++) {
@@ -106,7 +107,7 @@ export default class Ascent extends Scene {
     const T = this.T, s0 = this.ctx.start;
     const tb = T.boom;
     // the camera steps in on each sung word (and leans, alternating), then slams on "boom"
-    const ws = T.l1.words.filter((w) => norm(w.w) !== 'boom');
+    const ws = T.l1.words.filter((w) => norm(sourceToken(w)) !== 'boom');
     let zoom = 0.68 * (1 + 0.015 * prog(t, s0, tb));
     const leans = [-0.07, -0.03, -0.055, -0.015, 0.02];
     let rot = leans[0]!;
@@ -169,7 +170,7 @@ export default class Ascent extends Scene {
     // ---- lyric: "I HEAR THE BASILISK" set on the eyelid seam, split open by "boom"
     const L = this.L1; L.clear(); const c = L.ctx;
     const line = T.l1;
-    const words = line.words.filter((w) => norm(w.w) !== 'boom');
+    const words = line.words.filter((w) => norm(sourceToken(w)) !== 'boom');
     const fam = F.archivo(125, 700), size = Math.round(54 * Math.min(1, cam.zoom / 0.95)), track = 16;
     const txt = words.map((w) => w.w.toUpperCase()).join(' ');
     const lay = layout(txt, fam, size, track);
@@ -220,7 +221,7 @@ export default class Ascent extends Scene {
     // ---- "BOOM": the word rides the shockwave rings, repeated around each ring
     const boomW = wordOf(line, 'boom');
     if (t >= boomW.start) {
-      const bf = F.archivo(125, 900);
+      const bf = F.zh();
       const ctr = this.eyeToPx(0, 0, cam);
       for (let i = 0; i < 3; i++) {
         const e = t - boomW.start - i * 0.09;
@@ -228,7 +229,7 @@ export default class Ascent extends Scene {
         const Rpx = (0.68 + 0.07 * prog(e, 0, 0.5, ease.outCubic) + (i === 0 ? 0 : e * 1.2)) * cam.zoom * (H / 2);
         const a = (i === 0 ? 1 - prog(e, 0.35, 0.55) : Math.exp(-e / 0.25) * 0.7) * prog(e, 0, 0.03);
         const sz = 96 * (1 + e * 0.15) * (i === 0 ? 1 + 0.25 * pulse(e, 0, 0.06) : 1);
-        this.textOnArc(c, 'BOOM', ctr.x, ctr.y, Rpx, true, bf, sz, i === 0 ? rgba('bone', a) : rgba('signal', a), i === 0);
+        this.textOnArc(c, boomW.w, ctr.x, ctr.y, Rpx, true, bf, sz, i === 0 ? rgba('bone', a) : rgba('signal', a), i === 0);
       }
     }
     comp.draw(renderer, L.upload(), out);

@@ -19,6 +19,7 @@ import { LineBatch } from '../engine/lines';
 import { LIN, rgba } from '../engine/palette';
 import { F, font, layout, measure, textPoints, type TextLayout } from '../engine/type';
 import { norm, type Line, type Word } from '../engine/lyrics';
+import { sourceToken } from '../localization/chinese';
 import { strokeText, type StrokeText } from '../engine/stroke';
 import { sparkHead, sparkParticles } from './_motifs';
 import { PDoom, formatPDoom } from '../engine/hud';
@@ -37,7 +38,7 @@ const sineInOut = (x: number) => 0.5 - 0.5 * Math.cos(Math.PI * clamp(x));
 
 function findWord(line: Line, q: string): Word {
   const n = norm(q);
-  const w = line.words.find((x) => norm(x.w) === n);
+  const w = line.words.find((x) => norm(sourceToken(x)) === n);
   if (!w) throw new Error(`word not found: ${q}`);
   return w;
 }

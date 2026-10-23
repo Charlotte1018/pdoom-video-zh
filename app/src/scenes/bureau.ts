@@ -16,6 +16,7 @@ import { FSPass, Layer2D, W, H, makeRT } from '../engine/gl';
 import { DEFAULT_POST, type PostParams } from '../engine/post';
 import LeftTurn from './leftturn';
 import { type Line, type Word, norm } from '../engine/lyrics';
+import { sourceToken } from '../localization/chinese';
 import { F, font, measure, layout, glyphX } from '../engine/type';
 import { strokeText, drawStrokeText, type StrokeText } from '../engine/stroke';
 import { clamp, ease, lerp, prog, hash, noise1, pulse, TAU, frameIdx } from '../engine/util';
@@ -316,7 +317,7 @@ export default class Bureau extends Scene {
     this.pdoom = new PDoom(lyrics);
 
     this.ink.texture.colorSpace = THREE.NoColorSpace;
-    const find = (l: Line, q: string, from = 0) => l.words.slice(from).find((w) => norm(w.w).startsWith(norm(q))) ?? l.words[Math.min(from, l.words.length - 1)]!;
+    const find = (l: Line, q: string, from = 0) => l.words.slice(from).find((w) => norm(sourceToken(w)).startsWith(norm(q))) ?? l.words[Math.min(from, l.words.length - 1)]!;
     this.L1 = lyrics.get('safe enough');
     this.L2 = lyrics.get('Forward MLP');
     this.L3 = lyrics.get('Neumann');

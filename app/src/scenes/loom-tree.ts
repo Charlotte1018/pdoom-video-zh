@@ -252,7 +252,7 @@ export class LoomTree {
         c.shadowColor = rgba('signal', 0.7); c.shadowBlur = 40 * z;
         c.globalAlpha = loomK;
         c.fillStyle = rgba('signal');
-        c.fillText(w.w.replace(/[^A-Za-z]/g, ''), 0, 0);
+        c.fillText(w.w.replace(/[^\p{L}\p{N}]/gu, ''), 0, 0);
         c.shadowBlur = 0;
         c.font = font(this.famMono, 17);
         c.letterSpacing = '3px';

@@ -622,7 +622,7 @@ export default class Shoggoth extends Scene {
       if (!word || t < word.start) return;
       const age = t - word.start;
       const slide = ease.outExpo(clamp(age / 0.2));
-      const txt = word.w.replace(/[^a-z]/gi, '').toUpperCase();
+      const txt = word.w.replace(/[^\p{L}\p{N}]/gu, '').toUpperCase();
       c.font = font(F.mono(600), sp.size);
       c.letterSpacing = '0px';
       const tw = c.measureText(txt).width;

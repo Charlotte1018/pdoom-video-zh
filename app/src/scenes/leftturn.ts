@@ -23,6 +23,7 @@ import { LineBatch } from '../engine/lines';
 import { rgba } from '../engine/palette';
 import { F, font, layout } from '../engine/type';
 import { Lyrics, norm, type Line, type Word } from '../engine/lyrics';
+import { sourceToken } from '../localization/chinese';
 import { clamp, ease, keys, lerp, prog, pulse } from '../engine/util';
 import { sparkHead, sparkParticles } from './_motifs';
 import { MAP, FACE, EYE_R, routeAt, ROUTE_LA, ROUTE_LC, ROUTE_EYE, mapTextures, makeMapPass, WorldLayer } from './leftturn-map';
@@ -31,7 +32,7 @@ import { PDoom, formatPDoom } from '../engine/hud';
 
 function wordOf(l: Line, s: string): Word {
   const q = norm(s);
-  return l.words.find((w) => norm(w.w).includes(q)) ?? l.words[0]!;
+  return l.words.find((w) => norm(sourceToken(w)).includes(q)) ?? l.words[0]!;
 }
 
 type Cam = { x: number; y: number; rot: number; zoom: number };
@@ -121,7 +122,7 @@ export default class LeftTurn extends Scene {
     T.drain0 = beatBefore(this.ctx.end - 0.05);
     T.beats = [];
     for (let b = Math.floor(au.beatAt(T.without - 1)); au.timeOfBeat(b) < this.ctx.end + 1; b++) T.beats.push(au.timeOfBeat(b));
-    const head = T.l6.words.filter((w) => norm(w.w) !== 'cdr');
+    const head = T.l6.words.filter((w) => norm(sourceToken(w)) !== 'cdr');
     this.sch = new Schedule({
       t0: T.without, words: head, cdr, syl: T.cdrSyl, SRR, PDR, TRR, LAUNCH: T.launch,
       zip0: T.launch - 0.24, beats: T.beats, downbeats: au.downbeats.filter((d) => d > T.without - 1 && d < this.ctx.end + 1),

@@ -4,6 +4,7 @@
 import * as THREE from 'three';
 import { FSPass, W, H, SCALE, SS_TAP, scaleContext2D } from '../engine/gl';
 import type { Lyrics, Line, Word } from '../engine/lyrics';
+import { sourceToken } from '../localization/chinese';
 import type { AudioData } from '../engine/audio';
 import { LIN, rgba } from '../engine/palette';
 import { F, font } from '../engine/type';
@@ -62,7 +63,7 @@ export class IlyaTimes {
     this.l1 = ly.get('What did Ilya');
     this.l2 = ly.get('all for show');
     const w1 = this.l1.words, w2 = this.l2.words;
-    const find = (ws: Word[], re: RegExp, i: number) => ws.find((w) => re.test(w.w)) ?? ws[i]!;
+    const find = (ws: Word[], re: RegExp, i: number) => ws.find((w) => re.test(sourceToken(w))) ?? ws[i]!;
     this.what = w1[0]!; this.see = find(w1, /see/i, 3); this.well = find(w1, /we[’']?ll/i, 4);
     this.never = find(w1, /never/i, 5); this.know = find(w1, /know/i, 6);
     this.was = w2[0]!; this.it = w2[1]!; this.all = find(w2, /^all/i, 2); this.forW = find(w2, /^for/i, 3); this.show = find(w2, /show/i, 4);

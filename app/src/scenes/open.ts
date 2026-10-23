@@ -17,6 +17,7 @@ import { LIN, rgba } from '../engine/palette';
 import { F, font, layout, textPathCommands, type TextLayout } from '../engine/type';
 import { strokeText } from '../engine/stroke';
 import { Lyrics, norm, type Line, type Word } from '../engine/lyrics';
+import { sourceToken } from '../localization/chinese';
 import { sparkHead, sparkParticles } from './_motifs';
 import { clamp, lerp, ease, prog, pulse, noise1, noise3, hash, TAU } from '../engine/util';
 import { type P, type Part, pt, ellipse, arc, rect, poly, lengths, at, unicorn, octilinear, offset, mix, EYE } from './open-geo';
@@ -99,7 +100,7 @@ export default class OpenScene extends Scene {
   hand = { x: 300, y: 208 };
   eye = EYE.k1;
   eq = pt(-11.25, -0.62); // surprisal line (world)
-  famL = F.archivo(100, 700);
+  famL = F.zh();
 
   override async init() {
     const au = this.ctx.audio, ly = this.ctx.lyrics;
@@ -111,7 +112,7 @@ export default class OpenScene extends Scene {
     this.L3 = ly.get('no surprise');
     const find = (l: Line, q: string) => {
       const n = norm(q);
-      const x = l.words.find((y) => norm(y.w) === n);
+      const x = l.words.find((y) => norm(sourceToken(y)) === n);
       if (!x) throw new Error(`open: word not found: ${q}`);
       return x;
     };
@@ -177,23 +178,24 @@ export default class OpenScene extends Scene {
     const w = this.w;
     const colW = 5.9;
     // line 1: "AGI" is anchored right above the horn's tip; "I see sparks of" sits on top of it
-    const emAGI = fit('AGI', colW, 2.45);
-    const emR1 = fit('I see sparks of', colW, 1.25);
+    const emAGI = fit(w.AGI!.w, colW, 2.45);
+    const row1Text = [w.I!, w.see!, w.sparks!, w.of!].map((word) => word.w).join('');
+    const emR1 = fit(row1Text, colW, 1.25);
     const yAGI = 3.18;
     const yR1 = yAGI + CAP * emAGI + GAP + DESC * emR1;
-    place([w.I!, w.see!, w.sparks!, w.of!], ['I', 'see', 'sparks', 'of'], COLX, yR1, emR1, 'l1');
-    place([w.AGI!], ['AGI'], COLX - 0.06 * emAGI, yAGI, emAGI, 'l1');
-    place([w.in!, w.your!], ['in', 'your'], COLX, 2.28, 0.5, 'l1e', 0.25);
-    place([w.eyes!], ['eyes'], COLX, 1.62, 0.5, 'l1e', 0.2);
+    place([w.I!, w.see!, w.sparks!, w.of!], [w.I!.w, w.see!.w, w.sparks!.w, w.of!.w], COLX, yR1, emR1, 'l1');
+    place([w.AGI!], [w.AGI!.w], COLX - 0.06 * emAGI, yAGI, emAGI, 'l1');
+    place([w.in!, w.your!], [w.in!.w, w.your!.w], COLX, 2.28, 0.5, 'l1e', 0.25);
+    place([w.eyes!], [w.eyes!.w], COLX, 1.62, 0.5, 'l1e', 0.2);
     // line 2 under it
-    const r2 = stack([['Your circuits', 1.25], ['make me', 1.5], ['nervous,', 1.9]], 0.55, colW);
-    place([w.Your!, w.circuits!], ['Your', 'circuits'], COLX, r2[0]!.y, r2[0]!.em, 'l2');
-    place([w.make!, w.me!], ['make', 'me'], COLX, r2[1]!.y, r2[1]!.em, 'l2');
-    place([w.nervous!], ['nervous,'], COLX - 0.04, r2[2]!.y, r2[2]!.em, 'l2');
+    const r2 = stack([[[w.Your!, w.circuits!].map((word) => word.w).join(''), 1.25], [[w.make!, w.me!].map((word) => word.w).join(''), 1.5], [w.nervous!.w, 1.9]], 0.55, colW);
+    place([w.Your!, w.circuits!], [w.Your!.w, w.circuits!.w], COLX, r2[0]!.y, r2[0]!.em, 'l2');
+    place([w.make!, w.me!], [w.make!.w, w.me!.w], COLX, r2[1]!.y, r2[1]!.em, 'l2');
+    place([w.nervous!], [w.nervous!.w], COLX - 0.04, r2[2]!.y, r2[2]!.em, 'l2');
     // line 3 on the left of the figure, with the surprisal underneath
-    const r3 = stack([['that’s no', 1.45], ['surprise', 1.45]], 2.75, 5.3);
-    place([w.thats!, w.no!], ['that’s', 'no'], this.eq.x, r3[0]!.y, r3[0]!.em, 'l3');
-    place([w.surprise!], ['surprise'], this.eq.x, r3[1]!.y, r3[1]!.em, 'l3');
+    const r3 = stack([[[w.thats!, w.no!].map((word) => word.w).join(''), 1.45], [w.surprise!.w, 1.45]], 2.75, 5.3);
+    place([w.thats!, w.no!], [w.thats!.w, w.no!.w], this.eq.x, r3[0]!.y, r3[0]!.em, 'l3');
+    place([w.surprise!], [w.surprise!.w], this.eq.x, r3[1]!.y, r3[1]!.em, 'l3');
     this.eq = pt(this.eq.x + 0.03, r3[1]!.y - DESC * r3[1]!.em - 0.42);
     this.row1 = { y: yR1, em: emR1 };
   }

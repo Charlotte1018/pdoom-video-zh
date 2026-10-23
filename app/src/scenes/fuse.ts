@@ -14,6 +14,7 @@ import { Scene, type Frame, type PostOverrides } from '../engine/scene';
 import { FSPass, Layer2D, W, H } from '../engine/gl';
 import { LineBatch } from '../engine/lines';
 import { type Line, type Word, norm } from '../engine/lyrics';
+import { sourceToken } from '../localization/chinese';
 import { HEX, LIN, rgba } from '../engine/palette';
 import { F, font, layout, type TextLayout } from '../engine/type';
 import { GLSL_COMMON } from '../engine/glsl/common';
@@ -241,7 +242,7 @@ export default class Fuse extends Scene {
     this.pdoom = new PDoom(lyrics);
     this.L1 = lyrics.get('lit the fuse');
     this.L2 = lyrics.get('Orthogonality');
-    const find = (l: Line, q: string) => l.words.find((w) => norm(w.w).startsWith(norm(q))) ?? l.words[l.words.length - 1]!;
+    const find = (l: Line, q: string) => l.words.find((w) => norm(sourceToken(w)).startsWith(norm(q))) ?? l.words[l.words.length - 1]!;
     this.wFuse = find(this.L1, 'fuse');
     this.wOrth = find(this.L2, 'orthogonal');
     this.wThesis = find(this.L2, 'thesis');
@@ -267,7 +268,7 @@ export default class Fuse extends Scene {
     this.tBluesDb = au.nearestBeat(this.wBlues.start);
     this.tFit = this.tString;
     this.initString();
-    this.bluesLay = layout(this.wBlues.w.replace(/[^A-Za-z]/g, ''), this.bluesFam, this.bluesSize, 1);
+    this.bluesLay = layout(this.wBlues.w.replace(/[^\p{L}\p{N}]/gu, ''), this.bluesFam, this.bluesSize, 1);
 
     // ---- the fuse path (world px): a long lazy S across and beyond the frame
     const ctrl: V2[] = [];

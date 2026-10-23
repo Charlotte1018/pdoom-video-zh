@@ -16,6 +16,7 @@ import { HEX, rgba } from '../engine/palette';
 import { F, font, measure, layout, type TextLayout } from '../engine/type';
 import { PDoom, formatPDoom } from '../engine/hud';
 import type { Word } from '../engine/lyrics';
+import { sourceText } from '../localization/chinese';
 import { clamp, ease, hash, lerp, noise1, prog, pulse, smoothstep, frameIdx } from '../engine/util';
 import { sparkHead2D } from './_motifs';
 
@@ -60,7 +61,7 @@ export default class Hook extends Scene {
   dPrev = 0; dNew = 0;
   lw = 1; // hairline width multiplier (kept constant under the exit transforms)
   f = {
-    im: F.archivo(100, 900), up: F.archivo(125, 900), my: F.archivo(62, 900), doom: F.archivo(100, 900),
+    im: F.zh(), up: F.zh(), my: F.zh(), doom: F.archivo(100, 900),
     P: F.archivoItalic(100, 800), paren: F.archivo(62, 300), hair: F.archivo(100, 300), hairW: F.archivo(125, 300),
     mono: F.mono(400), monoM: F.mono(500), monoL: F.mono(300),
   };
@@ -72,7 +73,7 @@ export default class Hook extends Scene {
     this.n = Number(params.n ?? 1);
     const n = this.n;
     this.pd = new PDoom(lyrics);
-    const line = lyrics.linesIn(start - 0.3, end).find((l) => /upping/i.test(l.text)) ?? lyrics.linesIn(start, end)[0]!;
+    const line = lyrics.linesIn(start - 0.3, end).find((l) => /upping/i.test(sourceText(l))) ?? lyrics.linesIn(start, end)[0]!;
     this.words = line.words.slice(0, 4);
     this.ws = this.words.map((w) => w.start);
     const wP = this.words[3] ?? this.words[this.words.length - 1]!;
@@ -100,7 +101,7 @@ export default class Hook extends Scene {
     } else {
       this.tX0 = end - 0.1; this.tX1 = end - 0.008;
     }
-    this.upLay = layout('UPPING', this.f.up, 100);
+    this.upLay = layout(this.words[1]?.w ?? '正在上调', this.f.up, 100);
     this.finLay = layout('P(DOOM)', this.f.doom, ROOM.size);
     this.comp = new FSPass(COMP, {
       tex: { value: this.L.texture }, bgCol: { value: [0, 0, 0] }, echo: { value: 0 }, hot: { value: 1 }, gain: { value: 1 },
@@ -206,7 +207,8 @@ export default class Hook extends Scene {
     const t0 = this.ws[0]!;
     const k = prog(t, this.ctx.start, t0);
     const fam = this.f.im, size = 1150;
-    const w = measure('I’M', fam, size);
+    const text = this.words[0]?.w ?? '我';
+    const w = measure(text, fam, size);
     c.save();
     c.translate(W / 2, H / 2);
     c.rotate(-0.12 * (1 - k * k));
@@ -216,7 +218,7 @@ export default class Hook extends Scene {
       c.save(); c.scale(sc, sc);
       c.strokeStyle = rgba(j % 2 ? 'signal' : 'bone', 0.5 * sc);
       c.lineWidth = 2 / sc;
-      c.strokeText('I’M', -w / 2, (size * CAP) / 2);
+      c.strokeText(text, -w / 2, (size * CAP) / 2);
       c.restore();
     }
     c.restore();
@@ -239,7 +241,8 @@ export default class Hook extends Scene {
   private drawIM(c: CanvasRenderingContext2D, t: number, ink: Col) {
     const n = this.n, t0 = this.ws[0]!;
     const fam = this.f.im;
-    const w1 = measure('I’M', fam, 100) / 100;
+    const text = this.words[0]?.w ?? '我';
+    const w1 = measure(text, fam, 100) / 100;
     const size = Math.min(n === 1 ? 980 : 1200, (W - 150) / w1);
     const s = this.slam(t, t0, n === 4 ? 0.3 : 0.16);
     const w = w1 * size;
@@ -248,10 +251,10 @@ export default class Hook extends Scene {
     c.save();
     c.translate(W / 2, base);
     c.scale(s, s);
-    if (n === 4) this.echoes(c, 'I’M', fam, size, -w / 2, 0, t, t0);
+    if (n === 4) this.echoes(c, text, fam, size, -w / 2, 0, t, t0);
     c.font = font(fam, size);
     c.fillStyle = rgba(ink);
-    c.fillText('I’M', -w / 2, 0);
+    c.fillText(text, -w / 2, 0);
     c.restore();
   }
 
@@ -259,7 +262,7 @@ export default class Hook extends Scene {
     const n = this.n, t0 = this.ws[1]!, t1 = this.ws[2] ?? t0 + 0.4;
     const fam = this.f.up;
     const size = Math.min(900, (W - 150) / (this.upLay.width / 100));
-    const lay = layout('UPPING', fam, size);
+    const lay = layout(this.words[1]?.w ?? '正在上调', fam, size);
     const x0 = (W - lay.width) / 2;
     const capH = size * CAP;
     const endY = H / 2 + capH / 2 - 30;
@@ -313,16 +316,17 @@ export default class Hook extends Scene {
     const fam = this.f.my;
     const size = n === 1 ? 1300 : 1420;
     const s = this.slam(t, t0, n === 4 ? 0.3 : 0.12);
-    const w = measure('MY', fam, size);
+    const text = this.words[2]?.w ?? '我的';
+    const w = measure(text, fam, size);
     const base = H / 2 + (size * CAP) / 2;
     this.guides(c, base, size * CAP, ink);
     c.save();
     c.translate(W / 2, base);
     c.scale(s, s);
-    if (n === 4) this.echoes(c, 'MY', fam, size, -w / 2, 0, t, t0);
+    if (n === 4) this.echoes(c, text, fam, size, -w / 2, 0, t, t0);
     c.font = font(fam, size);
     c.fillStyle = rgba(ink);
-    c.fillText('MY', -w / 2, 0);
+    c.fillText(text, -w / 2, 0);
     c.restore();
   }
 
@@ -401,7 +405,7 @@ export default class Hook extends Scene {
 
   /** Hook 3: tiny hairline words in a lot of black; earlier words climb away above, fading. */
   private drawTiny(c: CanvasRenderingContext2D, t: number, wi: number, fade = 1, skip = -1) {
-    const labels = ['I’M', 'UPPING', 'MY', 'P(DOOM)'];
+    const labels = [this.words[0]?.w ?? '我', this.words[1]?.w ?? '正在上调', this.words[2]?.w ?? '我的', 'P(DOOM)'];
     const fam = this.f.hair, size = 54, track = 16, gap = 84;
     const cy = H / 2 + (size * CAP) / 2;
     for (let i = 0; i <= wi; i++) {
@@ -437,7 +441,7 @@ export default class Hook extends Scene {
     c.save();
     c.font = font(this.f.monoM, 13);
     c.letterSpacing = '3px';
-    const labels = ["I'M", 'UPPING', 'MY', 'P(DOOM)']; // mono UI legend: typewriter apostrophe
+    const labels = [this.words[0]?.w ?? '我', this.words[1]?.w ?? '正在上调', this.words[2]?.w ?? '我的', 'P(DOOM)'];
     let x = 96;
     labels.forEach((l, i) => {
       const s = `${String(i + 1).padStart(2, '0')} ${l}`;
@@ -447,7 +451,7 @@ export default class Hook extends Scene {
     });
     c.textAlign = 'right';
     c.fillStyle = rgba(ink, 0.5);
-    c.fillText(`HOOK ${this.n} / 4`, W - 96, 84);
+    c.fillText(`副歌 ${this.n} / 4`, W - 96, 84);
     c.restore();
     void t;
   }

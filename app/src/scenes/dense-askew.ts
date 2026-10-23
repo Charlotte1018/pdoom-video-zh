@@ -233,7 +233,7 @@ export class Askew {
     this.layR = layout(this.letters(this.wR).join(''), F.archivo(100, 900), RLHF.size);
   }
 
-  private letters(w: Word) { return w.w.replace(/[^A-Za-z]/g, '').toUpperCase().split(''); }
+  private letters(w: Word) { return Array.from(w.w.replace(/[^\p{L}\p{N}]/gu, '').toUpperCase()); }
 
   roll(t: number) { return stepped(t, this.rollK, 3.0, 0.42); }
   private lean(t: number) { return stepped(t, this.leanK, 2.0, 0.3); }

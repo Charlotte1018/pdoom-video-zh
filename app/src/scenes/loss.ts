@@ -13,6 +13,7 @@ import { LineBatch } from '../engine/lines';
 import { LIN, rgba } from '../engine/palette';
 import { F, font, layout, plain, type TextLayout } from '../engine/type';
 import { Lyrics, norm, type Line, type Word } from '../engine/lyrics';
+import { sourceToken } from '../localization/chinese';
 import { GLSL_COMMON } from '../engine/glsl/common';
 import { sparkHead, sparkParticles } from './_motifs';
 import { PDoom, formatPDoom } from '../engine/hud';
@@ -175,7 +176,7 @@ type Cam = { pos: P3; tgt: P3; roll: number; fov: number };
 
 function findWord(line: Line, q: string, from = 0): Word {
   const n = norm(q);
-  for (let i = from; i < line.words.length; i++) if (norm(line.words[i]!.w) === n) return line.words[i]!;
+  for (let i = from; i < line.words.length; i++) if (norm(sourceToken(line.words[i]!)) === n) return line.words[i]!;
   throw new Error(`word not found: ${q}`);
 }
 /** Layout with extra space after word gaps. */
@@ -266,7 +267,7 @@ export default class LossScene extends Scene {
     this.tRoll = pick(this.tBoss, this.tAnd + 0.3, this.T1 - 0.5); // roll on "boss"
 
     // --- chart lyric layout ("There was a sudden")
-    const idxSudden = this.L1.words.findIndex((w) => norm(w.w) === 'sudden');
+    const idxSudden = this.L1.words.findIndex((w) => norm(sourceToken(w)) === 'sudden');
     this.words1 = this.L1.words.slice(0, idxSudden + 1);
     this.lay1 = spacedLayout(this.words1.map((w) => w.w).join(' '), this.famLyric, SPACE_EM);
     const sc = TXT / 100;
@@ -314,7 +315,7 @@ export default class LossScene extends Scene {
       this.centerS.push(acc);
     }
     // canyon lyric ("in your training loss,")
-    const idxIn = this.L1.words.findIndex((w) => norm(w.w) === 'in');
+    const idxIn = this.L1.words.findIndex((w) => norm(sourceToken(w)) === 'in');
     const w3 = this.L1.words.slice(idxIn);
     const lay3 = spacedLayout(w3.map((w) => w.w).join(' '), F.archivoItalic(100, 800), SPACE_EM);
     const sc3 = TXT3 / 100;
