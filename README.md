@@ -1,4 +1,46 @@
-# I'm Upping My P(doom) — music video
+# 《我正在上调我的 P(doom)》— 中文版音乐视频
+
+这是 `pdoom-video` 的独立简体中文本地化副本。它保留原音频、46 行歌词的逐词时间戳、22 个场景的剪辑节奏、镜头运动和视觉风格，只替换实际渲染到画面及预览播放器中的英文文案。`P(doom)`、ChatGPT、Sydney、Gato 等数学写法或专有名称按语境保留。
+
+中文显示使用仓库内置的 Noto Sans CJK SC，离线渲染不会依赖系统字体。英文歌词仍作为内部时间轴查询键存在，因此场景逻辑和原始对齐数据没有被改写。
+
+## 中文版快速开始
+
+```sh
+cd app
+bun install
+bun run dev
+```
+
+浏览器打开 <http://localhost:5198>。生成快速预览版视频：
+
+```sh
+cd app
+bun run render
+```
+
+输出文件为 `out/pdoom-zh-1080p60.mp4`。如需最高质量的自适应采样版本：
+
+```sh
+cd app
+bun scripts/render.ts video --samples auto --shutter 0.2 --out ../out/pdoom-zh-1080p60.mp4
+```
+
+完整验证会运行单元测试、类型检查、生产构建，并在无头 Chrome 中检查 22 个场景的 66 个代表帧：
+
+```sh
+cd app
+bun test
+bun run check
+bun run build
+bun run verify
+```
+
+浏览器验证报告和联系表输出到 `out/verification-zh/`。
+
+---
+
+## Original project notes
 
 A generative, code-rendered music video with word-synced karaoke typography. Every frame is a deterministic function of song time, so the live preview in the browser and the offline 1080p60 (or 4K60) export are identical.
 
