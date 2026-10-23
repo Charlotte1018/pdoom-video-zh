@@ -265,7 +265,7 @@ function invXf(m: Xf): Xf {
 const apply = (m: Xf, x: number, y: number) => ({ x: m.a * x + m.c * y + m.e, y: m.b * x + m.d * y + m.f });
 const lerpCam = (p: Cam, q: Cam, k: number): Cam => ({ x: lerp(p.x, q.x, k), y: lerp(p.y, q.y, k), z: Math.exp(lerp(Math.log(p.z), Math.log(q.z), k)), r: lerp(p.r, q.r, k) });
 
-interface TypeChar { ch: string; t: number; x: number; y: number; dens: number; jx: number; jy: number; rot: number }
+interface TypeChar { ch: string; t: number; x: number; y: number; advance: number; dens: number; jx: number; jy: number; rot: number }
 
 export default class Bureau extends Scene {
   ink = new Layer2D();
@@ -355,19 +355,21 @@ export default class Bureau extends Scene {
     this.tPunch = nearestBeat(lerp(this.tReveal, this.tObs, 0.5));
 
     // ---- typewriter layout: each word is typed at a natural rate from its start (done by its end)
-    const adv = this.typeSize * 0.6;
     const mk = (words: Word[], x0: number, y0: number, seed: number) => {
       const out: TypeChar[] = [];
       let x = x0;
+      const fam = F.mono(500);
+      const gap = measure(' ', fam, this.typeSize);
       words.forEach((w, wi) => {
         const chars = Array.from(w.w);
         const per = Math.min(0.07, (w.end - w.start) / Math.max(1, chars.length));
         chars.forEach((ch, i) => {
           const k = out.length + seed * 100;
-          out.push({ ch, t: w.start + i * per, x, y: y0, dens: 0.8 + 0.2 * hash(k, 1), jx: (hash(k, 2) - 0.5) * 1.6, jy: (hash(k, 3) - 0.5) * 2.4, rot: (hash(k, 4) - 0.5) * 0.02 });
-          x += adv;
+          const advance = measure(ch, fam, this.typeSize);
+          out.push({ ch, t: w.start + i * per, x, y: y0, advance, dens: 0.8 + 0.2 * hash(k, 1), jx: (hash(k, 2) - 0.5) * 1.6, jy: (hash(k, 3) - 0.5) * 2.4, rot: (hash(k, 4) - 0.5) * 0.02 });
+          x += advance;
         });
-        if (wi < words.length - 1) x += adv;
+        if (wi < words.length - 1) x += gap;
       });
       return out;
     };
@@ -383,7 +385,7 @@ export default class Bureau extends Scene {
       const pa = this.pdoomSize * 0.6;
       this.pdoomField = Array.from(txt).map((ch, i) => {
         const k = 300 + i;
-        return { ch, t: t0 + i * per, x: A.x + 488 + i * pa, y: A.y + 458, dens: 0.82 + 0.18 * hash(k, 1), jx: (hash(k, 2) - 0.5) * 1.4, jy: (hash(k, 3) - 0.5) * 2, rot: (hash(k, 4) - 0.5) * 0.02 };
+        return { ch, t: t0 + i * per, x: A.x + 488 + i * pa, y: A.y + 458, advance: pa, dens: 0.82 + 0.18 * hash(k, 1), jx: (hash(k, 2) - 0.5) * 1.4, jy: (hash(k, 3) - 0.5) * 2, rot: (hash(k, 4) - 0.5) * 0.02 };
       });
     }
 
@@ -448,7 +450,7 @@ export default class Bureau extends Scene {
     let x = list[0]!.x;
     for (const c of list) {
       if (t < c.t) break;
-      x = lerp(x, c.x + this.typeSize * 0.6, ease.outCubic(prog(t, c.t, c.t + 0.05)));
+      x = lerp(x, c.x + c.advance, ease.outCubic(prog(t, c.t, c.t + 0.05)));
     }
     return x;
   }

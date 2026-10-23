@@ -100,6 +100,46 @@ try {
       sc.fillText(`${index + 1}. ${checkpoint.t.toFixed(2)} 秒`, x + 8, y + ch + 17);
     }
 
+    // Mixed Latin/CJK scenes must advance by each rendered glyph's real width.
+    // A fixed Latin monospace cell makes the wider Chinese fallback glyphs collide.
+    const layoutFailures: string[] = [];
+    const metric = document.createElement('canvas').getContext('2d')!;
+    const promptIds = ['prompt1', 'prompt2', 'prompt3'];
+    for (const id of promptIds) {
+      const scene = P.engine.loaded.get(id)?.scene as any;
+      const chars = Array.from(String(scene?.text ?? ''));
+      const xs = scene?.glyphXs as number[] | undefined;
+      if (!xs || xs.length !== chars.length + 1) {
+        layoutFailures.push(`${id}: missing per-glyph advance map`);
+        continue;
+      }
+      metric.font = `60px "${scene.fam}", "NotoSansSC"`;
+      for (let i = 0; i < chars.length; i++) {
+        const advance = xs[i + 1]! - xs[i]!;
+        const required = metric.measureText(chars[i]!).width;
+        if (advance + 0.5 < required) {
+          layoutFailures.push(`${id}: glyph ${JSON.stringify(chars[i])} advances ${advance.toFixed(2)}px, needs ${required.toFixed(2)}px`);
+          break;
+        }
+      }
+    }
+
+    const bureau = P.engine.loaded.get('bureau')?.scene as any;
+    metric.font = '50px "Plex-500", "NotoSansSC"';
+    for (const name of ['findings', 'conclusion'] as const) {
+      const chars = (bureau?.[name] ?? []) as { ch: string; x: number; y: number }[];
+      for (let i = 0; i + 1 < chars.length; i++) {
+        const current = chars[i]!, next = chars[i + 1]!;
+        if (current.y !== next.y) continue;
+        const advance = next.x - current.x;
+        const required = metric.measureText(current.ch).width;
+        if (advance + 0.5 < required) {
+          layoutFailures.push(`bureau.${name}: glyph ${JSON.stringify(current.ch)} advances ${advance.toFixed(2)}px, needs ${required.toFixed(2)}px`);
+          break;
+        }
+      }
+    }
+
     const audit = ((globalThis as any).__zhTextAudit ?? []) as { source: string; output: string }[];
     return {
       project: P.project,
@@ -107,6 +147,7 @@ try {
       scenes: P.timeline.length,
       samples,
       audit,
+      layoutFailures,
       engineErrors: P.errors,
       sheet: sheet.toDataURL('image/jpeg', 0.88),
     };
@@ -148,6 +189,7 @@ try {
     browserErrors: browserErrors.length,
     engineErrors: report.engineErrors.length,
     blankFrames: blankFrames.length,
+    layoutFailures: report.layoutFailures,
     untranslated,
   }, null, 2));
 
@@ -155,6 +197,7 @@ try {
     ...browserErrors,
     ...report.engineErrors,
     ...blankFrames.map((frame) => `Blank frame: ${frame.scene} @ ${frame.t}`),
+    ...report.layoutFailures.map((failure) => `Overlapping text: ${failure}`),
     ...untranslated.map((text) => `Untranslated canvas text: ${text}`),
   ];
   if (failures.length) throw new Error(failures.join('\n'));

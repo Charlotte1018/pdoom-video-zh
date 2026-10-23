@@ -45,7 +45,8 @@ export default class Prompt extends Scene {
   line!: Line;
   toks: Tok[] = [];
   text = '';
-  adv = 36;
+  /** Cumulative rendered advance for each character boundary in `text`. */
+  glyphXs: number[] = [0];
   fam = F.mono(400);
   // UI geometry (UI space = 1920x1080 plane before the camera)
   fx0 = 0; fx1 = 0; fy0 = 0; fy1 = 0; tx0 = 0; base = 0; keyX = 0;
@@ -66,7 +67,8 @@ export default class Prompt extends Scene {
     // typed input: typewriter quotes (lyric words come with ’; a keyboard types ')
     const typed = words.map((w) => plain(w.w));
     this.text = typed.join(' ');
-    this.adv = measure('0', this.fam, FS);
+    this.glyphXs = [0];
+    for (const ch of Array.from(this.text)) this.glyphXs.push(this.glyphXs[this.glyphXs.length - 1]! + measure(ch, this.fam, FS));
 
     // tokens
     const specs = SPECS[this.variant];
@@ -111,7 +113,7 @@ export default class Prompt extends Scene {
     this.tSmile1 = Math.min(this.tEnter + 0.46, this.tShut - 0.18);
 
     // layout: field centred, text left-aligned inside
-    const textW = this.adv * this.text.length;
+    const textW = this.glyphX(this.text.length);
     const padL = 96, padR = 150;
     const fw = Math.max(1180, textW + padL + padR);
     this.fx0 = (W - fw) / 2; this.fx1 = this.fx0 + fw;
@@ -174,11 +176,15 @@ export default class Prompt extends Scene {
     let x = this.tx0;
     for (const k of this.toks) {
       if (k.t0 > t) break;
-      const target = this.tx0 + (k.ci + k.n) * this.adv;
-      const before = this.tx0 + (k.ci - (k.space ? 1 : 0)) * this.adv;
+      const target = this.tx0 + this.glyphX(k.ci + k.n);
+      const before = this.tx0 + this.glyphX(k.ci - (k.space ? 1 : 0));
       x = smooth > 0 ? lerp(before, target, ease.outExpo(clamp((t - k.t0) / smooth))) : target;
     }
     return x;
+  }
+
+  private glyphX(index: number) {
+    return this.glyphXs[Math.max(0, Math.min(this.glyphXs.length - 1, index))]!;
   }
 
   private focusOf(sh: Shot, t: number, z: number): { x: number; y: number } {
@@ -431,7 +437,7 @@ export default class Prompt extends Scene {
     const age = t - ts;
     if (age <= 0) return { dx: 0, dy: 0, r: 0 };
     const last = this.text.length - 1;
-    const D = (last - ci) * this.adv; // distance from the held letter
+    const D = this.glyphX(last + 1) - this.glyphX(ci); // distance from the held letter
     const k = Math.pow(age, 1.3) * smoothstep(0, 0.8, age);
     return {
       dx: -D * 0.045 * k,
@@ -442,15 +448,15 @@ export default class Prompt extends Scene {
 
   private drawTokens(c: CanvasRenderingContext2D, t: number, hair: number) {
     const v = this.variant;
-    const adv = this.adv, base = this.base;
+    const base = this.base;
     c.save();
     c.font = font(this.fam, FS);
     c.textBaseline = 'alphabetic';
     for (const k of this.toks) {
       if (k.t0 > t) break;
-      const x0 = this.tx0 + (k.ci - (k.space ? 1 : 0)) * adv;
-      const xv = this.tx0 + k.ci * adv;
-      const x1 = this.tx0 + (k.ci + k.n) * adv;
+      const x0 = this.tx0 + this.glyphX(k.ci - (k.space ? 1 : 0));
+      const xv = this.tx0 + this.glyphX(k.ci);
+      const x1 = this.tx0 + this.glyphX(k.ci + k.n);
       const age = t - k.t0;
       const w = k.word;
       const sung = t < w.end;
@@ -470,7 +476,7 @@ export default class Prompt extends Scene {
       c.fillStyle = rgba('ash', 0.55 * fade);
       c.fillText(String(k.id), x0 + 5, by + 14);
       c.font = font(this.fam, FS);
-      if (k.space) { c.fillStyle = rgba('graphite', 0.9 * fade); c.fillRect(x0 + adv * 0.5 - 2, base - FS * 0.2, 3, 3); }
+      if (k.space) { c.fillStyle = rgba('graphite', 0.9 * fade); c.fillRect((x0 + xv) / 2 - 2, base - FS * 0.2, 3, 3); }
       // glyphs
       let txt = k.text, gx0 = 0;
       if (v === 'sydney' && k.first && k.word === this.line.words[0] && t > k.t0 + 0.5 && t < w.end - 0.3) {
@@ -479,8 +485,10 @@ export default class Prompt extends Scene {
       }
       for (let i = 0; i < Math.min(k.n, txt.length); i++) {
         const ch = txt[i]!;
-        const d = this.drift(k.ci + i, t, k.t0);
-        const gx = xv + i * adv + d.dx + gx0, gy = base + drop + d.dy;
+        const ci = k.ci + i;
+        const d = this.drift(ci, t, k.t0);
+        const charW = this.glyphX(ci + 1) - this.glyphX(ci);
+        const gx = this.tx0 + this.glyphX(ci) + d.dx + gx0, gy = base + drop + d.dy;
         let col: string;
         if (gx0) col = rgba('bone', 0.9);
         else if (sung || cool < 1) {
@@ -489,7 +497,7 @@ export default class Prompt extends Scene {
         } else col = rgba('bone', 0.95 * fade);
         c.fillStyle = col;
         if (d.r !== 0) {
-          c.save(); c.translate(gx + adv / 2, gy - FS * 0.35); c.rotate(d.r); c.fillText(ch, -adv / 2, FS * 0.35); c.restore();
+          c.save(); c.translate(gx + charW / 2, gy - FS * 0.35); c.rotate(d.r); c.fillText(ch, -charW / 2, FS * 0.35); c.restore();
         } else c.fillText(ch, gx, gy);
       }
     }
@@ -500,8 +508,8 @@ export default class Prompt extends Scene {
       const ks = this.toks.filter((k) => k.word === w && k.t0 <= t);
       if (!ks.length) continue;
       const first = ks[0]!, lastK = ks[ks.length - 1]!;
-      const x0 = this.tx0 + (first.ci - (first.space ? 1 : 0)) * adv + 3;
-      const x1 = this.tx0 + (lastK.ci + lastK.n) * adv - 3;
+      const x0 = this.tx0 + this.glyphX(first.ci - (first.space ? 1 : 0)) + 3;
+      const x1 = this.tx0 + this.glyphX(lastK.ci + lastK.n) - 3;
       const done = prog(t, w.end, w.end + 0.4);
       const alpha = (v === 'gato' ? 0.7 : 1) * (1 - 0.75 * done);
       c.fillStyle = rgba('signal', alpha);
@@ -519,7 +527,7 @@ export default class Prompt extends Scene {
       const built = clamp((t - a0) / POP_PRE); // flicker phase (computing)
       const picked = t >= k.t0;
       const collapse = ease.inCubic(prog(t, k.tPopEnd, k.tPopEnd + 0.12));
-      const ax = this.tx0 + k.ci * this.adv;
+      const ax = this.tx0 + this.glyphX(k.ci);
       const ay = this.fy0 - 26;
       const rows = k.dist;
       const rh = 21, headH = 20;
