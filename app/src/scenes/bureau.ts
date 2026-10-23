@@ -18,7 +18,6 @@ import LeftTurn from './leftturn';
 import { type Line, type Word, norm } from '../engine/lyrics';
 import { sourceToken } from '../localization/chinese';
 import { F, font, measure, layout, glyphX } from '../engine/type';
-import { strokeText, drawStrokeText, type StrokeText } from '../engine/stroke';
 import { clamp, ease, lerp, prog, hash, noise1, pulse, TAU, frameIdx } from '../engine/util';
 import { PDoom, formatPDoom } from '../engine/hud';
 
@@ -307,9 +306,6 @@ export default class Bureau extends Scene {
   pdoomField: TypeChar[] = [];
   pdoomSize = 38;
   typeSize = 50;
-  sig!: StrokeText;
-  obsHand!: StrokeText;
-  obsCharTimes: [number, number][] = [];
   layers: { x: number; ys: number[] }[] = [];
 
   override async init() {
@@ -391,8 +387,6 @@ export default class Bureau extends Scene {
       });
     }
 
-    this.sig = strokeText('We', 'script', 120);
-    this.obsHand = strokeText('obsolete', 'hscript', 124, 1);
     // the next plate, under the last page: its window as the timeline cuts it (on the beat at/before "Gato")
     const gato = lyrics.get('Gato').words[0]!.start;
     this.next = new LeftTurn({ ...this.ctx, id: 'leftturn', params: {}, start: this.ctx.end, end: au.timeOfBeat(Math.floor(au.beatAt(gato + 0.02))) });
@@ -400,11 +394,6 @@ export default class Bureau extends Scene {
     await this.next.init();
     this.tBurst = this.next.T.burst;
     this.tGlow = this.tBurst - this.beatLen;
-
-    // hand-writing of "obsolete": starts with the word and must be done before the burst
-    const wEnd = Math.min(this.wObs.end, this.tBurst - 0.12);
-    const n = this.obsHand.charRange.length;
-    this.obsCharTimes = Array.from({ length: n }, (_, i) => [lerp(this.tObs + 0.03, wEnd, i / n), lerp(this.tObs + 0.03, wEnd, (i + 1) / n)] as [number, number]);
 
     // ---- MLP geometry (relative to B)
     const counts = [4, 6, 6, 3];
@@ -1193,17 +1182,4 @@ function mixPost(a: PostOverrides, b: PostOverrides, k: number): PostOverrides {
   }
   out.shake ??= [0, 0];
   return out as PostOverrides;
-}
-
-/** Written length of a StrokeText with explicit per-char [start, end] times. */
-function writtenLen(st: StrokeText, charTimes: [number, number][], t: number) {
-  let len = 0;
-  for (let i = 0; i < st.charRange.length; i++) {
-    const [a, b] = st.charRange[i]!;
-    const [t0, t1] = charTimes[i] ?? [Infinity, Infinity];
-    if (t >= t1) len = b;
-    else if (t > t0) { len = a + (b - a) * ((t - t0) / Math.max(1e-3, t1 - t0)); break; }
-    else break;
-  }
-  return len;
 }
